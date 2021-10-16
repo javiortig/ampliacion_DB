@@ -6,7 +6,7 @@ from constants import models as modelsK
 from constants import database as dbK
 
 # self.__dict__update(kwargs)
-class Person(Model):
+class Company(Model):
     required_vars = []
     admissible_vars = []
     db = None
@@ -39,4 +39,4 @@ class Person(Model):
 
     @classmethod
     def _init_class(cls, db):
-        super()._init_class(db, model_name=dbK.DB_PERSON_KEY)
+        super()._init_class(db, model_name=dbK.DB_COMPANY_KEY)

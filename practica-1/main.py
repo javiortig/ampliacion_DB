@@ -1,8 +1,14 @@
-__author__ = 'Nombres_y_Apellidos'
+__author__ = 'Javier_Orti__Ekaitz'
 
 from pymongo import MongoClient
+
 import constants.database as dbK
-from Models.Model import Model
+
+from Models.Person import Person
+from Models.University import University
+from Models.Company import Company
+
+models = [Person, University, Company]
 
 if __name__ == '__main__':
     #TODO
@@ -14,7 +20,10 @@ if __name__ == '__main__':
     db = client[dbK.DB_NAME]
 
     # Initializate the models:
-    Model._init_class(db, dbK.DB_PERSON_KEY) # Person
+    for m in models:
+        m._init_class(db)
     
-    pass #No olvidar eliminar esta linea una vez implementado
-
+    # Comprobamos que funcionó
+    for m in models:
+        print(m.required_vars)
+        print(m.admissible_vars)
