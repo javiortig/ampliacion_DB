@@ -10,4 +10,4 @@ class Company(Model):
     @classmethod
     def _init_class(cls, db):
         super()._init_class(db, model_name=dbK.DB_COMPANY_KEY)
-        #uwu
+        #owo
