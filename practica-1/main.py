@@ -27,3 +27,5 @@ if __name__ == '__main__':
     for m in models:
         print(m.required_vars)
         print(m.admissible_vars)
+
+    

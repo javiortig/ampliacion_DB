@@ -24,6 +24,7 @@ class Model:
     def save(self): # actualiza en bases de datos unica y exculisavemnte lo que se modifica
         # estas son las querys
         #TODO
+        print("model")
         pass #No olvidar eliminar esta linea una vez implementado
 
     def set(self, **kwargs): # No guardan en la base de datos
