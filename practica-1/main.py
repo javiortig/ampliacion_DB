@@ -28,4 +28,4 @@ if __name__ == '__main__':
         print(m.required_vars)
         print(m.admissible_vars)
 
-    
+    javi = Person()

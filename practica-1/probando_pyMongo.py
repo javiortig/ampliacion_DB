@@ -67,5 +67,7 @@ post = {"author": "Juan",
 
 test_collection.insert_one(post)
 
+
+
 pprint.pprint(test_collection.find_one())
 
