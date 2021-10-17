@@ -1,6 +1,6 @@
 __author__ = 'Javier_Orti__Ekaitz'
 
-from pymongo import MongoClient
+from pymongo import MongoClient, collection
 
 import constants.database as dbK
 
@@ -28,4 +28,22 @@ if __name__ == '__main__':
         print(m.required_vars)
         print(m.admissible_vars)
 
+    print("Empieza aca\n")
     javi = Person()
+    javi.set()
+
+    # print(javi.admissible_vars)
+
+    # col = db['person']
+    # colFind = col.find({'author':'Juan'})
+    # for x in colFind:
+    #     print(x)
+    #     type(x)
+    
+    # print(colFind)
+
+    Q1 = db['person'].find({'address':'Huelva'})
+    for x in Q1:
+        print(x)
+        type(x)
+

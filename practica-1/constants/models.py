@@ -22,13 +22,13 @@ MODEL_VARS= {
     ]
 }
 
-juan = {'name': "Juan",
-        'national_id': 55423423,
-        'studies': [
-            {
-                'fecha_inicio': 123312,
-                'fecha_fin': 2332,
-                'course name': 'data'
-                id: saddassd
-            }
-        ]}
+# juan = {'name': "Juan",
+#         'national_id': 55423423,
+#         'studies': [
+#             {
+#                 'fecha_inicio': 123312,
+#                 'fecha_fin': 2332,
+#                 'course name': 'data'
+#                 id: saddassd
+#             }
+#         ]}

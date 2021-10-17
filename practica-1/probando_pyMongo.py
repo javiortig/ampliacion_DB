@@ -54,12 +54,13 @@ class Institucion:
 
 
 client = MongoClient('localhost', 27017)
-db = client['test-database']
+db = client['redES']
 
-test_collection = db['test-collection']
+test_collection = db['person']
 
-post = {"author": "Juan",
+post = {"author": "Paco",
         "text": "My second blog post!",
+        "address": "Haro",
         "tags": ["mongodb", "python", "pymongo"],
         "date": datetime.datetime.utcnow()}
 
@@ -67,7 +68,20 @@ post = {"author": "Juan",
 
 test_collection.insert_one(post)
 
-
-
 pprint.pprint(test_collection.find_one())
 
+def getCityGeoJSON(address):
+    """ Devuelve las coordenadas de una direcciion a partir de un str de la direccion
+    Cuidado, la API tiene un limite de peticiones.
+    Argumentos:
+        address (str) -- Direccion
+    Return:
+        (str) -- GeoJSON
+    """
+    from geopy.geocoders import Nominatim
+    geolocator = Nominatim(user_agent="geocoder")
+    location = geolocator.geocode(address)
+    return [location.latitude,location.longitude]
+
+print(getCityGeoJSON("Champ de Mars, Paris, France"))
+print(getCityGeoJSON("Huelva"))
