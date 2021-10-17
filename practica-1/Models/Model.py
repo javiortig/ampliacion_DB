@@ -75,7 +75,7 @@ class Model:
     def find(cls, filter) -> ModelCursor:
         """ Devuelve un cursor de modelos        
         """ 
-        cursor = cls.db.cars.find(filter)
+        cursor = cls.db.find(filter)
         return ModelCursor(cls,cursor)
 
     @classmethod
