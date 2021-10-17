@@ -23,27 +23,48 @@ if __name__ == '__main__':
     for m in models:
         m._init_class(db)
     
-    # Comprobamos que funcionó
-    for m in models:
-        print(m.required_vars)
-        print(m.admissible_vars)
+    datos = {
+        'name': 'Javi',
+        'last_name': 'Orti',
+        'national_id': '12312x'
+    }
 
-    print("Empieza aca\n")
-    javi = Person()
-    javi.set()
+    javi = Person(
+        name = 'Javi',
+        last_name ='Orti',
+        gender = 'm',
+        national_id = 22333123,
+        age=1, 
+        city = 'Huelva',
+        studies = 'mates',
+        #inventao= 2
+    )
 
-    # print(javi.admissible_vars)
+    javi.print()
 
-    # col = db['person']
-    # colFind = col.find({'author':'Juan'})
-    # for x in colFind:
+
+
+# Comprobamos que funcionó
+    # for m in models:
+    #     print(m.required_vars)
+    #     print(m.admissible_vars)
+
+    # print("Empieza aca\n")
+    # javi = Person()
+    # javi.set()
+
+    # # print(javi.admissible_vars)
+
+    # # col = db['person']
+    # # colFind = col.find({'author':'Juan'})
+    # # for x in colFind:
+    # #     print(x)
+    # #     type(x)
+    
+    # # print(colFind)
+
+    # Q1 = db['person'].find({'address':'Huelva'})
+    # for x in Q1:
     #     print(x)
     #     type(x)
-    
-    # print(colFind)
-
-    Q1 = db['person'].find({'address':'Huelva'})
-    for x in Q1:
-        print(x)
-        type(x)
 

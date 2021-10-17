@@ -2,40 +2,7 @@ import pymongo
 
 from constants import database as dbK
 from constants import models as modelsK
-
-class ModelCursor:
-    """ Cursor para iterar sobre los documentos del resultado de una
-    consulta. Los documentos deben ser devueltos en forma de objetos
-    modelo.
-    """
-    model_class = None
-    command_cursor = None
-    def __init__(self, model_class, command_cursor):
-        """ Inicializa ModelCursor
-        Argumentos:
-            model_class (class) -- Clase para crear los modelos del 
-            documento que se itera.
-            command_cursor (CommandCursor) -- Cursor de pymongo
-        """
-        self.model_class = model_class
-        self.command_cursor = command_cursor
-        pass #No olvidar eliminar esta linea una vez implementado
-    
-    def next(self):
-        """ Devuelve el siguiente documento en forma de modelo
-        """
-        if(self.alive()):
-            return self.model_class.__init__(self.command_cursor.next())
-        else:
-            return None
-
-    @property
-    def alive(self):
-        """True si existen más modelos por devolver, False en caso contrario
-        """
-        return self.command_cursor.alive()
-        pass #No olvidar eliminar esta linea una vez implementado
-
+from Models.ModelCursor import ModelCursor
 # self.__dict__update(kwargs)
 class Model:
     """ Prototipo de la clase modelo
@@ -44,28 +11,44 @@ class Model:
         clases como modelos se deseen que hereden de esta clase. Este segundo 
         metodo puede resultar mas compleja
     """
-    required_vars = []
-    admissible_vars = []
+    required_vars = None
+    admissible_vars = None
     db = None
+    data = None
 
     # Los filtros deben lanzar una excepcion
     # Se modifica todo a primer nivel
     def __init__(self, **kwargs): # No guardan en la base de datos
         #TODO
-        #self.set(kwargs)
+        self.set(**kwargs)
         #self.save(kwargs)
-        pass #No olvidar eliminar esta linea una vez implementado
+
+    # Filters kwargs with required_vars and admissible_vars
+    def _filter(self, **kwargs) -> bool:
+        args_set = set(kwargs.keys())
+        # with set theory we check that |kwargs ∩ required|=|required|
+        if (len(args_set & self.required_vars) != len(self.required_vars)):
+            raise Exception('missing required variables on argument')
+        
+        # (args - required)not⊆(admissible)
+        if(not (args_set - self.required_vars).issubset(self.admissible_vars)):
+            raise Exception('invalid admisible variables on argument')
+
+        return True
 
 
     def save(self): # actualiza en bases de datos unica y exculisavemnte lo que se modifica
-        # estas son las querys
-        #TODO
-        print("model")
+        #TODO guardar en la base de datos:
+        # si existe objeto -> update
+        # si no existe -> save
         pass #No olvidar eliminar esta linea una vez implementado
 
     def set(self, **kwargs): # No guardan en la base de datos
-        #TODO
-        pass #No olvidar eliminar esta linea una vez implementado
+        self._filter(**kwargs)
+        self.data = kwargs
+
+    def print(self):
+        print(self.data)
 
     # def ubicate(self):
     #     #TODO
@@ -76,7 +59,7 @@ class Model:
     @classmethod # classmethod es un metodo estatico. No se llama desde
     # un objeto concreto sino desde Model.find()
     # usar el metodo find de pymongo
-    def find(cls, filter):
+    def find(cls, filter) -> ModelCursor:
         """ Devuelve un cursor de modelos        
         """ 
         cursor = cls.db.cars.find(filter)
@@ -89,5 +72,5 @@ class Model:
         """ Inicializa las variables de clase en la inicializacion del sistema.
         """
         cls.db = db
-        cls.required_vars = modelsK.MODEL_VARS[model_name][0]
-        cls.admissible_vars = modelsK.MODEL_VARS[model_name][1]
+        cls.required_vars = set(modelsK.MODEL_VARS[model_name][0])
+        cls.admissible_vars = set(modelsK.MODEL_VARS[model_name][1])

@@ -9,15 +9,15 @@ import constants.database as dbK
 
 MODEL_VARS= {
     dbK.DB_PERSON_KEY: [
-    ['name', 'last_name', 'national_id', 'age', 'address', 'studies'],
+    ['name', 'last_name', 'national_id', 'age', 'city', 'studies'],
     ['second_name', 'gender', 'jobs']
     ],
     dbK.DB_UNIVERSITY_KEY: [
-        ['name', 'address', 'cif'],
+        ['name', 'city', 'cif'],
         ['age', 'teachers', 'students']
     ],
     dbK.DB_COMPANY_KEY: [
-        ['name', 'address', 'cif'],
+        ['name', 'city', 'cif'],
         ['age', 'workers', 'shareholders']
     ]
 }
