@@ -2,6 +2,7 @@ import pymongo
 
 from constants import database as dbK
 from constants import models as modelsK
+
 # self.__dict__update(kwargs)
 class Model:
     """ Prototipo de la clase modelo
@@ -18,6 +19,8 @@ class Model:
     # Se modifica todo a primer nivel
     def __init__(self, **kwargs): # No guardan en la base de datos
         #TODO
+        #self.set(kwargs)
+        #self.save(kwargs)
         pass #No olvidar eliminar esta linea una vez implementado
 
 
@@ -47,7 +50,6 @@ class Model:
         # solo comprobar que existen los datos
         """ Inicializa las variables de clase en la inicializacion del sistema.
         """
-        
         cls.db = db
         cls.required_vars = modelsK.MODEL_VARS[model_name][0]
         cls.admissible_vars = modelsK.MODEL_VARS[model_name][1]
