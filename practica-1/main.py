@@ -1,6 +1,7 @@
 __author__ = 'Javier_Orti__Ekaitz'
 
-from pymongo import MongoClient, collection
+from pymongo import MongoClient, collection, cursor
+from pprint import pprint
 
 import constants.database as dbK
 
@@ -18,8 +19,9 @@ if __name__ == '__main__':
 
     client = MongoClient(dbK.DB_ADDRESS, dbK.DB_PORT)
     db = client[dbK.DB_NAME]
-
-    # Initializate the models:
+    
+    
+    #Initializate the models:
     for m in models:
         m._init_class(db)
     
@@ -40,7 +42,9 @@ if __name__ == '__main__':
         #inventao= 2
     )
 
-    javi.print()
+    javi.save()
+
+    #javi.print()
 
 
 

@@ -8,9 +8,6 @@ from constants import database as dbK
 # self.__dict__update(kwargs)
 class Person(Model):
 
-    def save(self):
-        super().save()
-        print("persona ")
     @classmethod
     def _init_class(cls, db):
         super()._init_class(db, model_name=dbK.DB_PERSON_KEY)

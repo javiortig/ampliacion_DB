@@ -1,4 +1,5 @@
 import pymongo
+from pprint import pprint
 
 from constants import database as dbK
 from constants import models as modelsK
@@ -13,8 +14,10 @@ class Model:
     """
     required_vars = None
     admissible_vars = None
-    db = None
+    collection = None
     data = None
+    last_data_saved = None # Last data saved on the DB
+    index = ''
 
     # Los filtros deben lanzar una excepcion
     # Se modifica todo a primer nivel
@@ -41,7 +44,17 @@ class Model:
         #TODO guardar en la base de datos:
         # si existe objeto -> update
         # si no existe -> save
-        pass #No olvidar eliminar esta linea una vez implementado
+        if (not self.data):
+            raise Exception('no data to save on the collection')
+
+        # Check if exists in document
+        res = self.collection.find_one({self.index: self.data[self.index]})
+        # Inserts object if it doesnt exist
+        if(not res):
+            self.collection.insert_one(self.data)
+
+        #TODO finish update
+
 
     def set(self, **kwargs): # No guardan en la base de datos
         self._filter(**kwargs)
@@ -71,6 +84,10 @@ class Model:
         # solo comprobar que existen los datos
         """ Inicializa las variables de clase en la inicializacion del sistema.
         """
-        cls.db = db
+        cls.collection = db[model_name]
         cls.required_vars = set(modelsK.MODEL_VARS[model_name][0])
         cls.admissible_vars = set(modelsK.MODEL_VARS[model_name][1])
+
+        # Creates an index in the collection if not exists
+        cls.index = modelsK.MODEL_VARS[model_name][0][0]
+        cls.collection.create_index(cls.index, unique=True)
