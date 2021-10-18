@@ -5,6 +5,10 @@ from constants import database as dbK
 from constants import models as modelsK
 from Models.ModelCursor import ModelCursor
 # self.__dict__update(kwargs)
+
+#TODO: poder crear empty Model.
+#TODO: si se intenta crear un modelo que ya existe(existe su index), lanzar un error.
+# para ello proporcionar una funcion load que carque un modelo existente
 class Model:
     """ Prototipo de la clase modelo
         Copiar y pegar tantas veces como modelos se deseen crear (cambiando
@@ -12,53 +16,74 @@ class Model:
         clases como modelos se deseen que hereden de esta clase. Este segundo 
         metodo puede resultar mas compleja
     """
-    required_vars = None
-    admissible_vars = None
+    required_vars = set()
+    admissible_vars = set()
     collection = None
-    data = None
-    last_data_saved = None # Last data saved on the DB
+    data = {}
+    modified_data = []
     index = ''
 
     # Los filtros deben lanzar una excepcion
     # Se modifica todo a primer nivel
     def __init__(self, **kwargs): # No guardan en la base de datos
-        #TODO
-        self.set(**kwargs)
-        #self.save(kwargs)
+        self._filter(full=True, **kwargs)
+        
+        self.modified_data = list(kwargs.keys())
+        self.data.update(kwargs)
 
     # Filters kwargs with required_vars and admissible_vars
-    def _filter(self, **kwargs) -> bool:
+    # full= True will check that every required field is met
+    def _filter(self, full=False, **kwargs) -> bool:
         args_set = set(kwargs.keys())
-        # with set theory we check that |kwargs ∩ required|=|required|
-        if (len(args_set & self.required_vars) != len(self.required_vars)):
-            raise Exception('missing required variables on argument')
-        
-        # (args - required)not⊆(admissible)
-        if(not (args_set - self.required_vars).issubset(self.admissible_vars)):
-            raise Exception('invalid admisible variables on argument')
+
+        if (full):
+            # with set theory we check that |kwargs ∩ required|=|required|
+            if (len(args_set & self.required_vars) != len(self.required_vars)):
+                raise Exception('missing required variables on argument')
+            
+            # (args - required)¬⊆(admissible)
+            if(not (args_set - self.required_vars).issubset(self.admissible_vars)):
+                raise Exception('invalid admisible variables on argument')
+
+        else:
+            # (args)¬⊆(required ∪ admissible)
+            if(not args_set.issubset(self.required_vars | self.admissible_vars)):
+                raise Exception('invalid keys for aruments')
 
         return True
 
-
+    # Everytime save is executed, self.data syncs with its corresponding document
+    # in the collection
     def save(self): # actualiza en bases de datos unica y exculisavemnte lo que se modifica
-        #TODO guardar en la base de datos:
-        # si existe objeto -> update
-        # si no existe -> save
         if (not self.data):
             raise Exception('no data to save on the collection')
 
         # Check if exists in document
-        res = self.collection.find_one({self.index: self.data[self.index]})
+        query = {self.index: self.data[self.index]}
+        res = self.collection.find_one(query)
         # Inserts object if it doesnt exist
         if(not res):
+            # insert_one modifies self.data
             self.collection.insert_one(self.data)
+            print("inserto")
+        # If exists, update only the modified fields
+        else:
+            query_values = {k:v for (k,v) in self.data.items() if k in self.modified_data}
+            #res = self.collection.update_one(query, {'$set': query_values})
+            self.data = self.collection.find_one_and_update(
+                query, 
+                {'$set': query_values},
+                return_document=pymongo.ReturnDocument.AFTER
+            )
 
-        #TODO finish update
-
-
+        
+        self.data.pop('_id')
+        
     def set(self, **kwargs): # No guardan en la base de datos
-        self._filter(**kwargs)
-        self.data = kwargs
+        self._filter(full=False, **kwargs)
+        
+        self.modified_data = list(kwargs.keys())
+        self.data.update(kwargs)
 
     def print(self):
         print(self.data)
@@ -69,6 +94,10 @@ class Model:
     #     return getCityGeoJSON(address)
     #     pass #No olvidar eliminar esta linea una vez implementado
     
+    @classmethod
+    def load(cls, index) -> Model:
+        pass
+
     @classmethod # classmethod es un metodo estatico. No se llama desde
     # un objeto concreto sino desde Model.find()
     # usar el metodo find de pymongo

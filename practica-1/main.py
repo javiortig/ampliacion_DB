@@ -31,12 +31,21 @@ if __name__ == '__main__':
         'national_id': '12312x'
     }
 
+    # javi = Person(
+    #     name = 'Javi',
+    #     last_name ='Orti',
+    #     gender = 'm',
+    #     national_id = 22333123,
+    #     age=1, 
+    #     city = 'Huelva',
+    #     studies = 'mates',
+    #     #inventao= 2
+    # )
     javi = Person(
-        name = 'Javi',
-        last_name ='Orti',
-        gender = 'm',
-        national_id = 22333123,
-        age=1, 
+        name = 'Juan',
+        last_name ='Manuel',
+        national_id = 12321,
+        age=3, 
         city = 'Huelva',
         studies = 'mates',
         #inventao= 2
@@ -44,7 +53,7 @@ if __name__ == '__main__':
 
     javi.save()
 
-    #javi.print()
+    javi.print()
 
 
 

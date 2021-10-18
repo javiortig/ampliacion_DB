@@ -58,17 +58,23 @@ db = client['redES']
 
 test_collection = db['person']
 
-post = {"author": "Paco",
-        "text": "My second blog post!",
-        "address": "Haro",
-        "tags": ["mongodb", "python", "pymongo"],
-        "date": datetime.datetime.utcnow()}
+# post = {"author": "Paco",
+#         "text": "My second blog post!",
+#         "address": "Haro",
+#         "tags": ["mongodb", "python", "pymongo"],
+#         "date": datetime.datetime.utcnow()}
 
 
 
-test_collection.insert_one(post)
+# test_collection.insert_one(post)
 
-pprint.pprint(test_collection.find_one())
+# pprint.pprint(test_collection.find_one())
+test_collection.update_one
+
+result = test_collection.update_one({ "national_id": 1 }, 
+    { "$set":{"national_id": 2}})
+
+pprint(result.raw_result)
 
 def getCityGeoJSON(address):
     """ Devuelve las coordenadas de una direcciion a partir de un str de la direccion
