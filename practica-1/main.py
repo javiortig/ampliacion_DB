@@ -59,16 +59,76 @@ if __name__ == '__main__':
 
     # # print(javi.admissible_vars)
 
-    # # col = db['person']
-    # # colFind = col.find({'author':'Juan'})
-    # # for x in colFind:
-    # #     print(x)
-    # #     type(x)
-    
-    # # print(colFind)
+    pipelineQ1 = [
+        {
+            '$match': {
+                'address':'Huelva'
+            }
+        }
+    ]
+    pipelineQ2 = [
+        {
+            '$match': { 
+                'studies': { 
+                '$in': ['UPM','UAM'] 
+                } 
+            }
+        }
+    ]
+    pipelineQ3 = [
+        {
+            '$group': {
+                '_id':'$address'
+            }
+        }
+    ]
+    pipelineQ4 = [
+        {
+            '$geoNear': {
+                'near': {
+                    'type': 'Point',
+                    'coordinates': [35.7040744,139.5577317]
+                },
+                'distanceField': "distance",
+                'includeLocs':"location",
+                'spherical': False,
+            }
+        }
+    ]
+    pipelineQ5 = []
+    pipelineQ6 = [
+        {
+            '$group': {
+                '_id': {
+                    'jobs':'UPM'
+                },
+                'avg_job_cant': {
+                    '$avg': {
+                        '$size': {
+                            '$ifNull': [ '$studies', [] ] 
+                        }
+                    }
+                }
+            }
+        }
+    ]
+    pipelineQ7 = [
+        {
+            '$group': {
+                '_id':'$studies',
+                'numApariciones': {'$sum':1},
 
-    # Q1 = db['person'].find({'address':'Huelva'})
-    # for x in Q1:
-    #     print(x)
-    #     type(x)
+            }
+        },
+        {
+            '$limit':3
+        }
+    ]
+    Q1 = db['person'].aggregate(pipelineQ1)
+    Q2 = db['person'].aggregate(pipelineQ2)
+    Q3 = db['person'].aggregate(pipelineQ3)
+    Q4 = db['person'].aggregate(pipelineQ4)
+    Q5 = db['person'].aggregate(pipelineQ5)
+    Q6 = db['person'].aggregate(pipelineQ6)
+    Q7 = db['person'].aggregate(pipelineQ7)
 
