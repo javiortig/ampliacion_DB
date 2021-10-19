@@ -42,8 +42,7 @@ if __name__ == '__main__':
         national_id = 123,
         age=1, 
         city = 'Huelva',
-        studies = 'mates',
-        #inventao= 2
+        studies = 'mates'
     )
 
     juan = Person(
@@ -53,7 +52,6 @@ if __name__ == '__main__':
         age=3, 
         city = 'Huelva',
         studies = "pato"
-        #inventao= 2
     )
 
     juan.save()
@@ -207,30 +205,4 @@ if __name__ == '__main__':
     Q5 = db['person'].aggregate(pipelineQ5)
     Q6 = db['person'].aggregate(pipelineQ6)
     Q7 = db['person'].aggregate(pipelineQ7)
-
-
-# Comprobamos que funcionó
-    # for m in models:
-    #     print(m.required_vars)
-    #     print(m.admissible_vars)
-
-    # print("Empieza aca\n")
-    # javi = Person()
-    # javi.set()
-
-    # # print(javi.admissible_vars)
-
-    # # col = db['person']
-    # # colFind = col.find({'author':'Juan'})
-    # # for x in colFind:
-    # #     print(x)
-    # #     type(x)
-    
-    # # print(colFind)
-
-    # Q1 = db['person'].find({'address':'Huelva'})
-    print("pato")
-    for x in Q4:
-        print(x)
-        type(x)
 
