@@ -21,10 +21,8 @@ class Model:
     collection = None
     index = ''
 
-    # Los filtros deben lanzar una excepcion
-    # Se modifica todo a primer nivel
-    def __init__(self, **kwargs): # No guardan en la base de datos
-        kwargs.pop(dbK.MONGO_ID_STR, None) # Deletes _id if exists
+    def __init__(self, **kwargs): # 
+        kwargs.pop(dbK.MONGO_ID_STR, None)
         self._filter(full=True, **kwargs)
         # Initialize object attributes:
         self.modified_data = list(kwargs.keys())
@@ -56,7 +54,7 @@ class Model:
     # Everytime save is executed, self.data syncs with its corresponding document
     # in the collection
     # All queries here are O(1)
-    def save(self): # actualiza en bases de datos unica y exculisavemnte lo que se modifica 
+    def save(self): 
         if (not self.data):
             raise Exception('no data to save on the collection')
 
@@ -128,8 +126,6 @@ class Model:
 
     @classmethod
     def _init_class(cls, db, model_name = ''):
-        # se sacan las variables admitidas y requeridas de un archivo separado
-        # solo comprobar que existen los datos
         """ Inicializa las variables de clase en la inicializacion del sistema.
         """
         cls.db = db
