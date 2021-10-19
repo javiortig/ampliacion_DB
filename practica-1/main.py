@@ -8,6 +8,7 @@ import constants.database as dbK
 from Models.Person import Person
 from Models.University import University
 from Models.Company import Company
+from Models.ModelCursor import ModelCursor
 
 models = [Person, University, Company]
 
@@ -20,10 +21,15 @@ if __name__ == '__main__':
     client = MongoClient(dbK.DB_ADDRESS, dbK.DB_PORT)
     db = client[dbK.DB_NAME]
     
-    
+    #TODO: inicializar coleccion ciudad
+    # Crear indice geosphere2D
+    # crear indice nombre
+
     #Initializate the models:
     for m in models:
         m._init_class(db)
+    
+    
     
     datos = {
         'name': 'Javi',
@@ -31,17 +37,18 @@ if __name__ == '__main__':
         'national_id': '12312x'
     }
 
-    # javi = Person(
-    #     name = 'Javi',
-    #     last_name ='Orti',
-    #     gender = 'm',
-    #     national_id = 22333123,
-    #     age=1, 
-    #     city = 'Huelva',
-    #     studies = 'mates',
-    #     #inventao= 2
-    # )
     javi = Person(
+        name = 'Javi',
+        last_name ='Orti',
+        gender = 'm',
+        national_id = 123,
+        age=1, 
+        city = 'Huelva',
+        studies = 'mates',
+        #inventao= 2
+    )
+
+    juan = Person(
         name = 'Juan',
         last_name ='Manuel',
         national_id = 12321,
@@ -51,11 +58,39 @@ if __name__ == '__main__':
         #inventao= 2
     )
 
+    juan.save()
+
+    pepito = Person(
+        name = 'pepito',
+        last_name ='jose',
+        national_id = 44,
+        age=30, 
+        city = 'malaga',
+        studies = 'mates',
+        #inventao= 2
+    )
+
+    pepito.save()
+    juan.save()
     javi.save()
 
-    javi.print()
+    cursor = Person.find([{'$match':{'studies':'mates'}}])
 
+    personita = cursor.next()
+    personita = cursor.next()
 
+    personita.print()
+
+    javi = Person.load('javi')
+
+    model_cursor_nuestro = Person.find("Personas de huelva")
+    model_cursor_nuestro.next()
+    while True:
+        r =  model_cursor_nuestro.next()
+        if (r is None):
+            break
+        else:
+            r.print()
 
 # Comprobamos que funcionó
     # for m in models:

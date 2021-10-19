@@ -3,6 +3,7 @@ from pprint import pprint
 
 from constants import database as dbK
 from constants import models as modelsK
+
 from Models.ModelCursor import ModelCursor
 # self.__dict__update(kwargs)
 
@@ -19,17 +20,18 @@ class Model:
     required_vars = set()
     admissible_vars = set()
     collection = None
-    data = {}
-    modified_data = []
     index = ''
 
     # Los filtros deben lanzar una excepcion
     # Se modifica todo a primer nivel
     def __init__(self, **kwargs): # No guardan en la base de datos
+        kwargs.pop('_id', None) # Deleetes _id if exists
         self._filter(full=True, **kwargs)
-        
+        # Initialize object attributes:
         self.modified_data = list(kwargs.keys())
+        self.data = dict()
         self.data.update(kwargs)
+        
 
     # Filters kwargs with required_vars and admissible_vars
     # full= True will check that every required field is met
@@ -55,6 +57,9 @@ class Model:
     # Everytime save is executed, self.data syncs with its corresponding document
     # in the collection
     def save(self): # actualiza en bases de datos unica y exculisavemnte lo que se modifica
+        # comprueba si existe la ciudad en citys
+        # si existe -> citys.find('Huelva').id
+        # no existe ->  
         if (not self.data):
             raise Exception('no data to save on the collection')
 
@@ -95,7 +100,8 @@ class Model:
     #     pass #No olvidar eliminar esta linea una vez implementado
     
     @classmethod
-    def load(cls, index) -> Model:
+    def load(cls, index):
+        #TODO: si alguien quiere cargar un modelo existente de la db
         pass
 
     @classmethod # classmethod es un metodo estatico. No se llama desde
@@ -104,8 +110,8 @@ class Model:
     def find(cls, filter) -> ModelCursor:
         """ Devuelve un cursor de modelos        
         """ 
-        cursor = cls.collection.aggregate(filter)
-        return ModelCursor(cls,cursor)
+        result_cursor = cls.collection.aggregate(filter)
+        return ModelCursor(cls, result_cursor)
 
     @classmethod
     def _init_class(cls, db, model_name = ''):
@@ -120,3 +126,6 @@ class Model:
         # Creates an index in the collection if not exists
         cls.index = modelsK.MODEL_VARS[model_name][0][0]
         cls.collection.create_index(cls.index, unique=True)
+
+
+# TODO: definir geocity()
