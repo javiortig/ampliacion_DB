@@ -80,4 +80,160 @@ if __name__ == '__main__':
     # for x in Q1:
     #     print(x)
     #     type(x)
+    pipelineQ1 = [
+        {
+            '$lookup': {
+                'from': 'city',
+                'localField': 'city',
+                'foreignField': 'id',
+                'pipeline': [
+                    { '$match': {'name':'Huelva'}},
+                    # { '$project': {'_id':0, 'name':'$name'}}
+                ],
+                'as': 'ciudad'
+            }
+        },
+        { "$unwind": "$ciudad" },
+        # { '$addFields': {'city':'$ciudad.name'}},
+        # { '$project': {'ciudad':0}}
+    ]
+    pipelineQ2 = [
+        { '$unwind': '$studies'},
+        {
+            '$lookup': {
+                'from': 'university',
+                'localField': 'studies.university',
+                'foreignField': 'id_uni',
+                'pipeline': [
+                    { 
+                        '$match': {
+                            'name': {
+                                '$in': ['UAM','UPM']
+                            }
+                        }
+                    },
+                    # { '$project': {'_id':0, 'name':'$name'}}
+                ],
+                'as': 'universidad'
+            }
+        },
+        { "$unwind": "$universidad" },
+        # { '$addFields': {'studies':'$universidad.name'}},
+        # { '$project': {'universidad':0}}
+    ]
+    pipelineQ3 = [
+        {
+            '$lookup': {
+                'from': 'city',
+                'localField': 'city',
+                'foreignField': 'id',
+                'pipeline': [
+                    { '$project': {'_id':0, 'name':'$name'}}
+                ],
+                'as': 'ciudad'
+            }
+        },
+        { "$unwind": "$ciudad" },
+        {
+            '$group': {
+                '_id':'$ciudad.name'
+            }
+        },
+        { '$project': {'_id':0, 'city':'$_id'}}
+    ]
+    pipelineQ4 = [
+        {
+            '$geoNear': {
+                'near': {
+                    'type': 'Point',
+                    'coordinates': [35.7040744,139.5577317]
+                },
+                'distanceField': "dist.calculated",
+                'includeLocs':"dist.location",
+                'spherical': False,
+            }
+        },
+        { '$limit': 10}
+    ]
+    # Tablas?
+    pipelineQ5 = [
+        {
+            '$studies.final': { '$gte': 'ISODate("2017-01-01T00:00:00Z'}
+        },
+    ]
+    pipelineQ6 = [
+        # { '$unwind': '$estudios'},
+        # {
+        #     '$lookup': {
+        #         'from': 'university',
+        #         'localField': 'estudios.university',
+        #         'foreignField': 'id_uni',
+        #         'pipeline': [
+        #             { 
+        #                 '$match': {
+        #                     'name': {
+        #                         '$in': ['UAM','UPM']
+        #                     }
+        #                 }
+        #             },
+        #             { '$project': {'_id':0, 'name':'$name'}}
+        #         ],
+        #         'as': 'universidad'
+        #     }
+        # },
+        # { '$unwind': 'universidad'},
+        # { 
+        #     '$match': {
+        #         'universidad.name':'UPM'
+        #     }
+        # },
+        { '$addFields': {'nombreUniversidad':'$estudios.universidad'}},
+        {
+            '$match': {
+                'nombreUniversidad':'UPM'
+            }
+        },
+        # Falta coger solo el primero de las ocurrencias de _id, hay gente que estudio mas de 1 vez en la UPM
+        # {
+        #     '$group': {
+        #         '_id':'$_id',
+        #         'trabajo':'$trabajo'
+        #     }
+        # },
+        {
+            '$group': {
+                '_id': {
+                    'nombreUniversidad':'UPM'
+                },
+                'avg_studies_cant': {
+                    '$avg': {
+                        '$size': {
+                            '$ifNull': [ '$nombreUniversidad', [] ] 
+                        }
+                    }
+                }
+            }
+        }
+    ]
+    pipelineQ7 = [
+        {'$unwind': '$estudios'},
+        {
+            '$group': {
+                '_id':'$estudios.universidad',
+                'numApariciones': {'$sum':1},
 
+            }
+        },
+        { '$sort': {'numApariciones':-1}},
+        {
+            '$limit':3
+        }
+    ]
+
+    # Q1 = db['person'].aggregate(pipelineQ1)
+    # Q2 = db['person'].aggregate(pipelineQ2)
+    # Q3 = db['person'].aggregate(pipelineQ3)
+    # Q4 = db['company'].aggregate(pipelineQ4)
+    # Q5 = db['person'].aggregate(pipelineQ5)
+    # Q6 = db['person'].aggregate(pipelineQ6)
+    # Q7 = db['person'].aggregate(pipelineQ7)
