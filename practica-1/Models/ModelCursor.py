@@ -1,7 +1,5 @@
 from pymongo import command_cursor
 
-
-
 class ModelCursor:
     """ Cursor para iterar sobre los documentos del resultado de una
     consulta. Los documentos deben ser devueltos en forma de objetos
@@ -19,7 +17,6 @@ class ModelCursor:
 
     
     def next(self):
-        # TODO: 
         if self.command_cursor.alive:
             d = self.command_cursor.next()
             return self.model_class(**d)
