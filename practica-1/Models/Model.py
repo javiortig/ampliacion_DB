@@ -104,7 +104,7 @@ class Model:
     def find(cls, filter) -> ModelCursor:
         """ Devuelve un cursor de modelos        
         """ 
-        cursor = cls.db.find(filter)
+        cursor = cls.collection.aggregate(filter)
         return ModelCursor(cls,cursor)
 
     @classmethod
