@@ -33,4 +33,3 @@ class ModelCursor:
         """True si existen más modelos por devolver, False en caso contrario
         """
         return self.command_cursor.alive
-        pass #No olvidar eliminar esta linea una vez implementado

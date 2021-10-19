@@ -1,6 +1,6 @@
 __author__ = 'Javier_Orti__Ekaitz'
 
-from pymongo import MongoClient, collection, cursor
+from pymongo import MongoClient, collection, cursor, GEOSPHERE
 from pprint import pprint
 
 import constants.database as dbK
@@ -12,25 +12,23 @@ from Models.ModelCursor import ModelCursor
 
 models = [Person, University, Company]
 
-if __name__ == '__main__':
-    #TODO
-    # primero conectar la base de datos y pasarla a los 3 modelos en el init_class
-    # ejecutar los 3 init_class
-    # las consultas todas con aggregate
-
-    client = MongoClient(dbK.DB_ADDRESS, dbK.DB_PORT)
-    db = client[dbK.DB_NAME]
-    
-    #TODO: inicializar coleccion ciudad
-    # Crear indice geosphere2D
-    # crear indice nombre
+def initialize_models(db):
+    # Initialize city collection
+    city_collection = db[dbK.DB_CITY_KEY]
+    city_collection.create_index(dbK.DB_CITY_NAME_STR, unique=True)   
+    city_collection.create_index([(dbK.DB_CITY_LOCATION_STR, GEOSPHERE)])
 
     #Initializate the models:
     for m in models:
         m._init_class(db)
+
+if __name__ == '__main__':
+
+    client = MongoClient(dbK.DB_ADDRESS, dbK.DB_PORT)
+    db = client[dbK.DB_NAME]
     
-    
-    
+    initialize_models(db)
+
     datos = {
         'name': 'Javi',
         'last_name': 'Orti',
@@ -74,32 +72,25 @@ if __name__ == '__main__':
     juan.save()
     javi.save()
 
-    cursor = Person.find([{'$match':{'studies':'mates'}}])
+    per = Person.load(44)
 
-    personita = cursor.next()
-    personita = cursor.next()
+    per.print()
 
-    personita.print()
+    # cursor = Person.find([{'$match':{'studies':'mates'}}])
 
-    javi = Person.load('javi')
+    # personita = cursor.next()
+    # personita = cursor.next()
 
-    model_cursor_nuestro = Person.find("Personas de huelva")
-    model_cursor_nuestro.next()
-    while True:
-        r =  model_cursor_nuestro.next()
-        if (r is None):
-            break
-        else:
-            r.print()
+    # personita.print()
 
-# Comprobamos que funcionó
-    # for m in models:
-    #     print(m.required_vars)
-    #     print(m.admissible_vars)
-
-    # print("Empieza aca\n")
-    # javi = Person()
-    # javi.set()
+    # model_cursor_nuestro = Person.find("Personas de huelva")
+    # model_cursor_nuestro.next()
+    # while True:
+    #     r =  model_cursor_nuestro.next()
+    #     if (r is None):
+    #         break
+    #     else:
+    #         r.print()
 
     # # print(javi.admissible_vars)
 
