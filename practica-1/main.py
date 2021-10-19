@@ -52,7 +52,7 @@ if __name__ == '__main__':
         national_id = 12321,
         age=3, 
         city = 'Huelva',
-        studies = 'mates',
+        studies = "pato"
         #inventao= 2
     )
 
@@ -64,8 +64,8 @@ if __name__ == '__main__':
         national_id = 44,
         age=30, 
         city = 'malaga',
-        studies = 'mates',
-        #inventao= 2
+        jobs = [{'name':'UPM'},{'name':'a'}],
+        studies = [{'university':'UPM','final':'ISODate("2018-07-02T01:23:40Z'},{'university':'UAM','final':'ISODate("2018-07-02T01:23:40Z'},{'university':'UPM','final':'ISODate("2018-07-02T01:23:40Z'},{'university':'UAM','final':'ISODate("2018-07-02T01:23:40Z'},{'university':'UPM','final':'ISODate("2018-07-02T01:23:40Z'},{'university':'UAM','final':'ISODate("2018-07-02T01:23:40Z'},{'university':'UPM','final':'ISODate("2018-07-02T01:23:40Z'},{'university':'UAM','final':'ISODate("2018-07-02T01:23:40Z'},{'university':'UPM','final':'ISODate("2018-07-02T01:23:40Z'},{'university':'UAM','final':'ISODate("2018-07-02T01:23:40Z'}]
     )
 
     pepito.save()
@@ -106,63 +106,38 @@ if __name__ == '__main__':
     # for x in Q1:
     #     print(x)
     #     type(x)
+
     pipelineQ1 = [
-        {
-            '$lookup': {
-                'from': 'city',
-                'localField': 'city',
-                'foreignField': 'id',
-                'pipeline': [
-                    { '$match': {'name':'Huelva'}},
-                    # { '$project': {'_id':0, 'name':'$name'}}
-                ],
-                'as': 'ciudad'
+        { 
+            '$match': {
+                'city': 'Huelva'
             }
-        },
-        { "$unwind": "$ciudad" },
-        # { '$addFields': {'city':'$ciudad.name'}},
-        # { '$project': {'ciudad':0}}
+        }
     ]
     pipelineQ2 = [
-        { '$unwind': '$studies'},
-        {
-            '$lookup': {
-                'from': 'university',
-                'localField': 'studies.university',
-                'foreignField': 'id_uni',
-                'pipeline': [
-                    { 
-                        '$match': {
-                            'name': {
-                                '$in': ['UAM','UPM']
-                            }
+        # { 
+        #     '$match': {
+        #         'estudios.universidad': {
+        #             '$in': ['UAM','UPM']
+        #         }
+        #     }
+        # }
+        { 
+            '$match': {
+                'studies': {
+                    '$elemMatch': {
+                        'university': {
+                            '$in': ['UAM','UPM']
                         }
-                    },
-                    # { '$project': {'_id':0, 'name':'$name'}}
-                ],
-                'as': 'universidad'
+                    }
+                }
             }
-        },
-        { "$unwind": "$universidad" },
-        # { '$addFields': {'studies':'$universidad.name'}},
-        # { '$project': {'universidad':0}}
+        }
     ]
     pipelineQ3 = [
         {
-            '$lookup': {
-                'from': 'city',
-                'localField': 'city',
-                'foreignField': 'id',
-                'pipeline': [
-                    { '$project': {'_id':0, 'name':'$name'}}
-                ],
-                'as': 'ciudad'
-            }
-        },
-        { "$unwind": "$ciudad" },
-        {
             '$group': {
-                '_id':'$ciudad.name'
+                '_id':'$city'
             }
         },
         { '$project': {'_id':0, 'city':'$_id'}}
@@ -176,7 +151,7 @@ if __name__ == '__main__':
                 },
                 'distanceField': "dist.calculated",
                 'includeLocs':"dist.location",
-                'spherical': False,
+                'spherical': 'true',
             }
         },
         { '$limit': 10}
@@ -184,52 +159,22 @@ if __name__ == '__main__':
     # Tablas?
     pipelineQ5 = [
         {
-            '$studies.final': { '$gte': 'ISODate("2017-01-01T00:00:00Z'}
+            '$match': {
+                'studies.final': { '$gte': 'ISODate("2017-01-01T00:00:00Z'}
+            }
         },
     ]
     pipelineQ6 = [
-        # { '$unwind': '$estudios'},
-        # {
-        #     '$lookup': {
-        #         'from': 'university',
-        #         'localField': 'estudios.university',
-        #         'foreignField': 'id_uni',
-        #         'pipeline': [
-        #             { 
-        #                 '$match': {
-        #                     'name': {
-        #                         '$in': ['UAM','UPM']
-        #                     }
-        #                 }
-        #             },
-        #             { '$project': {'_id':0, 'name':'$name'}}
-        #         ],
-        #         'as': 'universidad'
-        #     }
-        # },
-        # { '$unwind': 'universidad'},
-        # { 
-        #     '$match': {
-        #         'universidad.name':'UPM'
-        #     }
-        # },
-        { '$addFields': {'nombreUniversidad':'$estudios.universidad'}},
+        { '$addFields': {'nombreUniversidad':'$studies.university'}},
         {
             '$match': {
-                'nombreUniversidad':'UPM'
+                'jobs.name':'UPM'
             }
         },
-        # Falta coger solo el primero de las ocurrencias de _id, hay gente que estudio mas de 1 vez en la UPM
-        # {
-        #     '$group': {
-        #         '_id':'$_id',
-        #         'trabajo':'$trabajo'
-        #     }
-        # },
         {
             '$group': {
                 '_id': {
-                    'nombreUniversidad':'UPM'
+                    'nombreUniversidad':'$nombreUniversidad',
                 },
                 'avg_studies_cant': {
                     '$avg': {
@@ -242,7 +187,6 @@ if __name__ == '__main__':
         }
     ]
     pipelineQ7 = [
-        {'$unwind': '$estudios'},
         {
             '$group': {
                 '_id':'$estudios.universidad',
@@ -256,10 +200,37 @@ if __name__ == '__main__':
         }
     ]
 
-    # Q1 = db['person'].aggregate(pipelineQ1)
-    # Q2 = db['person'].aggregate(pipelineQ2)
-    # Q3 = db['person'].aggregate(pipelineQ3)
-    # Q4 = db['company'].aggregate(pipelineQ4)
-    # Q5 = db['person'].aggregate(pipelineQ5)
-    # Q6 = db['person'].aggregate(pipelineQ6)
-    # Q7 = db['person'].aggregate(pipelineQ7)
+    Q1 = db['person'].aggregate(pipelineQ1)
+    Q2 = db['person'].aggregate(pipelineQ2)
+    Q3 = db['person'].aggregate(pipelineQ3)
+    Q4 = db['city'].aggregate(pipelineQ4)
+    Q5 = db['person'].aggregate(pipelineQ5)
+    Q6 = db['person'].aggregate(pipelineQ6)
+    Q7 = db['person'].aggregate(pipelineQ7)
+
+
+# Comprobamos que funcionó
+    # for m in models:
+    #     print(m.required_vars)
+    #     print(m.admissible_vars)
+
+    # print("Empieza aca\n")
+    # javi = Person()
+    # javi.set()
+
+    # # print(javi.admissible_vars)
+
+    # # col = db['person']
+    # # colFind = col.find({'author':'Juan'})
+    # # for x in colFind:
+    # #     print(x)
+    # #     type(x)
+    
+    # # print(colFind)
+
+    # Q1 = db['person'].find({'address':'Huelva'})
+    print("pato")
+    for x in Q4:
+        print(x)
+        type(x)
+
