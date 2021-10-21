@@ -55,9 +55,7 @@ class Model:
     # in the collection
     # All queries here are O(1)
     def save(self): 
-        if (not self.data):
-            raise Exception('no data to save on the collection')
-
+        
         # Check if self.data contains city:
         # We will use this to save as many API calls as possible. 
         if dbK.DB_CITY_KEY in self.data:
