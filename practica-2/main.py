@@ -31,7 +31,20 @@ if __name__ == '__main__':
 
 
 
+    javi = Person(
+            name = 'Javi',
+            last_name ='Orti',
+            gender = 'm',
+            national_id = 123,
+            age=1, 
+            city = 'Huelva',
+            studies = 'TODO'
+        )
 
+    javi.save()
+
+    print(javi.cache.hgetall('p:123'))
+    print(javi.cache.keys())
 
     # modelos = []
 
