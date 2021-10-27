@@ -19,7 +19,7 @@ class Person(Model):
         #         # Check if university exists in collection. 
         #         query = {university_index: s}
         #         res = self.collection.find_one(query)
-        #         if (self.db[dbK.DB_UNIVERSITY_KEY]):
+        #         if (self.db[dbK.DB_UNIV   ERSITY_KEY]):
 
         
         super().save()
