@@ -16,14 +16,38 @@ class Person(Model):
         if (not self.data):
             raise Exception('no data to save on the person collection')
 
-        # save it in cache
-        person_cache_key = redisK.PERSON_C + redisK.KEY_SEP_C + str(self.data['national_id'])
-        self.cache.hmset(person_cache_key, self.data)
-        self.cache.expire(person_cache_key, redisK.EXPIRATION_TIME)
-        #TODO: guardar los arrays aparte ya que en redis no se puede anidar
+        # save it in cache TODO: NO LO HE PROBADO
+        # Creates the person key, studies key and jobs key used with redis
+        person_cache_keys = []
+        person_cache_keys.append(redisK.PERSON_C + redisK.KEY_SEP_C + str(self.data['national_id']))
+        person_cache_keys.append(redisK.STUDIES_C + redisK.KEY_SEP_C + str(self.data['national_id']))
+        person_cache_keys.append(redisK.JOBS_C + redisK.KEY_SEP_C + str(self.data['national_id']))
+
+        # Structure the data for our cache scheme
+        temp_data = self.data
+        temp_studies = self.data.pop('studies')
+        temp_jobs = self.data.pop('jobs')
+
+        # Makes sures all the required variables exists
+        if (not temp_studies):
+            raise Exception('no studies array provided')
+        
+        # Save persons general data in cache
+        self.cache.hmset(person_cache_keys[0], temp_data)
+        # Save studies array:
+        for s in temp_studies:
+            self.cache.rpush(person_cache_keys[1], s)
+
+        # Save jobs array if exists:
+        for j in temp_jobs:
+            self.cache.rpush(person_cache_keys[2], j)
+        
+        # Set the expiration time:
+        for key in person_cache_keys:
+            self.cache.expire(key, redisK.EXPIRATION_TIME)
 
 
-        # and then in the DB
+        # and then save data in the main DB
         super().save()
 
     
