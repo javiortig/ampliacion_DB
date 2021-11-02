@@ -24,11 +24,11 @@ class Model:
     def __init__(self, **kwargs): # 
         kwargs.pop(dbK.MONGO_ID_STR, None)
         self._filter(full=True, **kwargs)
+
         # Initialize object attributes:
         self.modified_data = list(kwargs.keys())
         self.data = dict()
         self.data.update(kwargs)
-        
 
     # Filters kwargs with required_vars and admissible_vars
     # full= True will check that every required field is met
@@ -55,7 +55,6 @@ class Model:
     # in the collection
     # All queries here are O(1)
     def save(self): 
-        
         # Check if self.data contains city:
         # We will use this to save as many API calls as possible. 
         if dbK.DB_CITY_KEY in self.data:
@@ -78,10 +77,11 @@ class Model:
         # Check if exists in document
         query = {self.index: self.data[self.index]}
         res = self.collection.find_one(query)
+
         # Inserts object if it doesnt exist
         if(not res):
             # insert_one modifies self.data
-            self.collection.insert_one(self.data)
+            er = self.collection.insert_one(self.data)
             print("inserto mongo")
         # If exists, update only the modified fields
         else:

@@ -2,6 +2,7 @@ __author__ = 'Javier_Orti__Ekaitz_Arriola'
 
 from pymongo import MongoClient, collection, cursor, GEOSPHERE
 from pprint import pprint
+from datetime import datetime
 
 import constants.database as dbK
 
@@ -36,15 +37,18 @@ if __name__ == '__main__':
             last_name ='Orti',
             gender = 'm',
             national_id = 123,
-            age=1, 
+            age=28, 
             city = 'Huelva',
-            studies = 'TODO'
-        )
+            studies = [{'university':'Utad','final':datetime.strptime('19/04/2000', "%d/%m/%Y")},
+                {'university':'UPM','final':datetime.strptime('24/11/1998', "%d/%m/%Y")}]
+    )
 
     javi.save()
 
-    print(javi.cache.hgetall('p:123'))
+    print(javi.cache.hgetall('p;123'))
+    print(javi.cache.lrange('s;123', 0, -1))
     print(javi.cache.keys())
+    
 
     # modelos = []
 
