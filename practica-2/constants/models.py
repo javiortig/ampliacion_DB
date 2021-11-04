@@ -9,11 +9,11 @@ MODEL_VARS= {
     ['second_name', 'gender', 'jobs']
     ],
     dbK.DB_UNIVERSITY_KEY: [
-        ['name', 'cif', 'city'],
+        ['name', 'cif', 'city', 'end_date'],
         ['age', 'public', 'courses'] # public is a bool. courses is a list []
     ],
     dbK.DB_COMPANY_KEY: [
-        ['name', 'cif', 'city'],
+        ['name', 'cif', 'city', 'end_date'],
         ['age']
     ]
 }
