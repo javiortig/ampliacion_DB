@@ -103,8 +103,15 @@ class Model:
         self.modified_data = list(kwargs.keys())
         self.data.update(kwargs)
 
+    # Both model.print or print(model) will print the model values
     def print(self):
         print(self.data)
+
+    # The user can use this method to get the model as human readable string
+    def __str__(self):
+        return str(self.data)
+
+    
     
     # Loads an existing model from the collection
     @classmethod
