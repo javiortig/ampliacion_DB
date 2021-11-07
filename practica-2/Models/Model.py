@@ -110,8 +110,6 @@ class Model:
     # The user can use this method to get the model as human readable string
     def __str__(self):
         return str(self.data)
-
-    
     
     # Loads an existing model from the collection
     @classmethod

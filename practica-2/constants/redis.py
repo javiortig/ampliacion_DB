@@ -14,8 +14,8 @@ PERSON_C = 'p'
 STUDIES_C = 's'
 JOBS_C = 'j'
 
-
+# TODO: hacerlo todo serializado con un json y no hace falta dividirlo en 3
 # una persona tendra una key 'p;12344' siendo el numero su dni.
-# Su universidad 's;12344' y sus trabajos 'j;12344'
+# Su estudios 's;12344' y sus trabajos 'j;12344'
 # a mi se me ocurre que el array tenga esta estructura: ['nombre_universidad;fecha_final']
 # lo mismo para jobs
