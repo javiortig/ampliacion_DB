@@ -8,10 +8,12 @@ class HelpDesk:
     zname = "peticiones"
 
     #TODO la prioridad debe de estar dada por el usuario, o se le da por otros medios?
-    def realizarPeticion(self,user_id,priority):
+    @classmethod
+    def realizarPeticion(cls,user_id,priority):
         self.helpDesk.zadd(self.zname,{user_id,priority},nx=True)
 
-    def obtenerPeticion(self) ->str:
+    @classmethod
+    def obtenerPeticion(cls) ->str:
         #timeout=0 espera indefinidamente
         #el [1] es porque devuelve [key,value,score], lo que en este caso seria ["peticiones",id_usuario,prioridad]
         return self.helpDesk.bzpopmax(self.zname,timeout=0)[1]
