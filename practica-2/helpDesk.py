@@ -30,6 +30,7 @@ class HelpDesk:
 if __name__ == '__main__':
 	HelpDesk.init_class()
 	
+	print("Formato del ejemplo: userNUM;ticketNUM, el num de despues del ; no es la prioridad")
 	HelpDesk.realizarPeticion("user3",3,7)
 	HelpDesk.realizarPeticion("user4",4,6)      
 	HelpDesk.realizarPeticion("user1",5,12)
