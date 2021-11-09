@@ -6,23 +6,38 @@ import constants.redis as rdK
 class HelpDesk:
     helpDesk = None
     zname = "peticiones"
-
-    #TODO la prioridad debe de estar dada por el usuario, o se le da por otros medios?
+    
     @classmethod
-    def realizarPeticion(cls,user_id,priority):
-        cls.helpDesk.zadd(cls.zname,{user_id,priority},nx=True)
-
+    def realizarPeticion(cls,user_id="null",numTicket="",priority=-1):
+    	# To use non-0-to-9-numerical tickets
+    	if type(numTicket) == int:
+    		numTicket = int(numTicket)
+    	# nx=True -> if any, does not update the priority
+    	cls.helpDesk.zadd(cls.zname,{user_id+rdK.KEY_SEP_C+str(numTicket):priority},nx=True)
+    
     @classmethod
-    def obtenerPeticion(cls) ->str:
-        #timeout=0 espera indefinidamente
-        #el [1] es porque devuelve [key,value,score], lo que en este caso seria ["peticiones",id_usuario,prioridad]
+    def obtenerPeticion(cls) -> str :
+    	# timeout=0 -> waits indefinitely
+        # bzpopmax returns [key,value,score]
         return cls.helpDesk.bzpopmax(cls.zname,timeout=0)[1]
 
     @classmethod
-    def _init_class(cls):
-        # cls.helpDesk = redis.Redis(host=redisK.DB_ADDRESS, port= redisK.DB_PORT, db=redisK.DB_INDEX)
-        # cls.helpDesk.config_set(redisK.REDIS_MAXMEM_STR, redisK.MAXMEM)
-        # cls.helpDesk.config_set(redisK.REDIS_POLICY_STR, redisK.POLICY)
+    def init_class(cls):
         cls.helpDesk = redis.Redis(host=rdK.DB_ADDRESS, port= rdK.DB_PORT, db=rdK.DB_HELPDESK_INDEX)
         cls.helpDesk.config_set(rdK.REDIS_MAXMEM_STR, rdK.MAXMEM)
         cls.helpDesk.config_set(rdK.REDIS_POLICY_STR, rdK.POLICY)
+
+if __name__ == '__main__':
+	HelpDesk.init_class()
+	
+	HelpDesk.realizarPeticion("user3",3,7)
+	HelpDesk.realizarPeticion("user4",4,6)      
+	HelpDesk.realizarPeticion("user1",5,12)
+	HelpDesk.realizarPeticion("user2","6",8)
+
+	print(HelpDesk.obtenerPeticion())
+	print(HelpDesk.obtenerPeticion())
+	print(HelpDesk.obtenerPeticion())
+	print(HelpDesk.obtenerPeticion())
+	# Con el 5 se queda esperando indefinidamente a que haya un dato para obtener, ya que solo le metimos user1, 2, 3 y 4.
+	# print(HelpDesk.obtenerPeticion())
