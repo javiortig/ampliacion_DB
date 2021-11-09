@@ -3,10 +3,6 @@ import json
 from typing import Union
 import constants.redis as rdK
 
-# NUEVO EN CONSTANT/REDIS.PY
-DB_SESION_INDEX = 3
-DB_HELPDESK_INDEX = 4
-
 class HelpDesk:
     helpDesk = None
     zname = "peticiones"
@@ -25,6 +21,6 @@ class HelpDesk:
         # cls.helpDesk = redis.Redis(host=redisK.DB_ADDRESS, port= redisK.DB_PORT, db=redisK.DB_INDEX)
         # cls.helpDesk.config_set(redisK.REDIS_MAXMEM_STR, redisK.MAXMEM)
         # cls.helpDesk.config_set(redisK.REDIS_POLICY_STR, redisK.POLICY)
-        cls.helpDesk = redis.Redis(host=rdK.DB_ADDRESS, port= rdK.DB_PORT, db=rdK.DB_HELPDESK_INDEX)
+        cls.helpDesk = redis.Redis(host=rdK.DB_ADDRESS, port= rdK.DB_PORT, db=rdK.HELPDESK_INDEX)
         cls.helpDesk.config_set(rdK.REDIS_MAXMEM_STR, rdK.MAXMEM)
         cls.helpDesk.config_set(rdK.REDIS_POLICY_STR, rdK.POLICY)
