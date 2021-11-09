@@ -80,7 +80,7 @@ class Sesion:
 
 	def loginToken(self,token) -> int :
 		# Collect the 'privilege' field of the session. 
-		# If it does not exist the session, returns -1
+		# If the session does not exist, returns -1
 		res = self.sesion.get(token)
 		if res is None:
 			return -1
