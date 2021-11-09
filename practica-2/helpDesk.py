@@ -23,7 +23,7 @@ class HelpDesk:
 
     @classmethod
     def init_class(cls):
-        cls.helpDesk = redis.Redis(host=rdK.DB_ADDRESS, port= rdK.DB_PORT, db=rdK.DB_HELPDESK_INDEX)
+        cls.helpDesk = redis.Redis(host=rdK.DB_ADDRESS, port= rdK.DB_PORT, db=rdK.DB_HELPDESK_INDEX, charset="utf-8", decode_responses=True)
         cls.helpDesk.config_set(rdK.REDIS_MAXMEM_STR, rdK.MAXMEM)
         cls.helpDesk.config_set(rdK.REDIS_POLICY_STR, rdK.POLICY)
 
