@@ -9,7 +9,7 @@ class HelpDesk:
 
     #TODO la prioridad debe de estar dada por el usuario, o se le da por otros medios?
     def realizarPeticion(self,user_id,priority):
-        self.helpDesk.zadd(self.zname,priority,user_id,nx=True)
+        self.helpDesk.zadd(self.zname,{user_id,priority},nx=True)
 
     def obtenerPeticion(self) ->str:
         #timeout=0 espera indefinidamente
