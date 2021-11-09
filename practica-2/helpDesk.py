@@ -9,7 +9,7 @@ class HelpDesk:
     
     @classmethod
     def realizarPeticion(cls,user_id="null",numTicket="",priority=-1):
-	# Stores user_id;numTicket, where ";" (rdK.KEY_SEP_C) is the separator
+		# Stores user_id;numTicket, where ";" (rdK.KEY_SEP_C) is the separator
     	# nx=True -> if any, does not update the priority
     	cls.helpDesk.zadd(cls.zname,{user_id+rdK.KEY_SEP_C+str(numTicket):priority},nx=True)
     
