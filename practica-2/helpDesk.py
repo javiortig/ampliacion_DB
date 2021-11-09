@@ -9,9 +9,7 @@ class HelpDesk:
     
     @classmethod
     def realizarPeticion(cls,user_id="null",numTicket="",priority=-1):
-    	# To use non-0-to-9-numerical tickets
-    	if type(numTicket) == int:
-    		numTicket = int(numTicket)
+	# Stores user_id;numTicket, where ";" (rdK.KEY_SEP_C) is the separator
     	# nx=True -> if any, does not update the priority
     	cls.helpDesk.zadd(cls.zname,{user_id+rdK.KEY_SEP_C+str(numTicket):priority},nx=True)
     
@@ -40,5 +38,5 @@ if __name__ == '__main__':
 	print(HelpDesk.obtenerPeticion())
 	print(HelpDesk.obtenerPeticion())
 	print(HelpDesk.obtenerPeticion())
-	# Con el 5 se queda esperando indefinidamente a que haya un dato para obtener, ya que solo le metimos user1, 2, 3 y 4.
+	# Con el quinto se queda esperando indefinidamente a que haya un dato para obtener, ya que solo le metimos user1, 2, 3 y 4.
 	# print(HelpDesk.obtenerPeticion())
