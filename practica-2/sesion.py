@@ -15,7 +15,7 @@ class Sesion:
 	def createSesion(self,**kwargs) -> Union[dict,None] :
 		# Add 'privilege' if does not have it and check that the data is correct before dumping it in self
 		if 'privilege' not in kwargs.keys():
-			kwargs['privilege'] = rdK.DEFAULT_TICKET_PRIORITY
+			kwargs['privilege'] = rdK.DEFAULT_PRIVILEGE
 		self._filter(**kwargs)
 		self.__dict__.update(kwargs)
 
