@@ -3,10 +3,6 @@ import json
 from typing import Union
 import constants.redis as rdK
 
-# NUEVO EN CONSTANT/REDIS.PY
-DB_SESION_INDEX = 3
-DB_HELPDESK_INDEX = 4
-
 class Sesion:
     data_keys = ['username','name','password','privilege']
     sesion = None
@@ -64,6 +60,6 @@ class Sesion:
         # cls.sesion = redis.Redis(host=redisK.DB_ADDRESS, port= redisK.DB_PORT, db=redisK.DB_INDEX)
         # cls.sesion.config_set(redisK.REDIS_MAXMEM_STR, redisK.MAXMEM)
         # cls.sesion.config_set(redisK.REDIS_POLICY_STR, redisK.POLICY)
-        cls.sesion = redis.Redis(host=rdK.DB_ADDRESS, port= rdK.DB_PORT, db=rdK.DB_SESION_INDEX)
+        cls.sesion = redis.Redis(host=rdK.DB_ADDRESS, port= rdK.DB_PORT, db=rdK.SESION_INDEX)
         cls.sesion.config_set(rdK.REDIS_MAXMEM_STR, rdK.MAXMEM)
         cls.sesion.config_set(rdK.REDIS_POLICY_STR, rdK.POLICY)
