@@ -1,6 +1,8 @@
 DB_PORT = 6379
 DB_ADDRESS = 'localhost'
 DB_INDEX = 2
+SESION_INDEX = 3
+HELPDESK_INDEX = 4
 
 REDIS_MAXMEM_STR = 'maxmemory'
 MAXMEM = '150mb'
