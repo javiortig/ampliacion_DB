@@ -1,5 +1,6 @@
-
+from Models.Redes import Redes
 
 
 if __name__ == "__main__":
-    pass
+    db = Redes()
+    db.create_user('Javi')
