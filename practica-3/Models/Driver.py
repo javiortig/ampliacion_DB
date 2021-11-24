@@ -3,36 +3,44 @@ from typing import Union
 
 from neo4j.work import result
 
-#TODO: hacer una session x query/transaction o hacer unaa session para toda la clase??
+# TODO: Como hacer las queries atomicas?? iniciar una sesion e ir haciendo transacciones
+# o hacer una pipeline que sea una lista de string con las queries y ejecutarla al final
+# o hacer una unica megatransaccion...
 class Driver:
     def __init__(self, uri, user, password):
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
 
+        self.session_is_active = False # TODO: no se si se usara
+
+    # Close connection  
     def close(self):
         self.driver.close()
 
-    def query(self, input: str):
+    # TODO: no se si será así 
+    # If atomic is true, the query will be directly executed, else it will be added to pipeline
+    # and executed when user calls execute()
+    def query(self, input: str, atomic: bool = True):
         with self.driver.session() as session:
             query_result = session.run(input)
             return query_result.values()
 
-
+        
+    def execute(self):
+        pass
     @classmethod
-    # assemblies node variables to a query string format
-    def node_to_str(cls, identifier: Union[str, None] = None, labels: Union[list, str, None] = None, properties: Union[dict, None] = None)-> str:
-        result = '('
+    # This function is used just to reuse code
+    def _inner_query_str_values(cls, identifier: Union[str, None] = None, labels: Union[list, str, None] = None, properties: Union[dict, None] = None)-> str:
+        result = ''
 
         # Adds identifier
         if identifier:
             result += identifier
 
         # Adds labels
-        if not labels:
-            result += ''
-        elif type(labels) == list:
+        if type(labels) == list:
             for l in labels:
                 result += ':' + l
-        else: 
+        elif type(labels) == str: 
             result += ':' + labels
         
         # Adds properties:
@@ -43,9 +51,35 @@ class Driver:
 
             result = result[:-1] + '}'
 
+        return result
 
-        return result + ')'
+    @classmethod
+    # assemblies node variables to a query string format
+    def node_to_str(cls, identifier: Union[str, None] = None, labels: Union[list, str, None] = None, properties: Union[dict, None] = None)-> str:
+        return '(' + cls._inner_query_str_values(identifier, labels, properties) + ')'
 
+    # Relations direction can be '<', '>' or '-'
+    @classmethod
+    def relation_to_str(cls, identifier: Union[str, None] = None, labels: Union[list, str, None] = None, properties: Union[dict, None] = None, direction: str = '>'):
+        result = '-'
+        
+        if(identifier or labels or properties):
+            result += '['
+            result += cls._inner_query_str_values(identifier, labels, properties)
+            result += ']'
+
+        
+        result += '-'
+
+        # Adds direction
+        if(direction == '>'):
+            result += '>'
+     
+        elif(direction == '<'):
+            result = '<' + result   
+
+        return result
+        
 
     def print_greeting(self, message: str):
         with self.driver.session() as session:

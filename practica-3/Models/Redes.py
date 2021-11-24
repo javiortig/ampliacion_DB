@@ -6,9 +6,12 @@ from typing import Union
 # This class will be accessed from the user
 
 #TODO: hacer mejor que sea una herencia
-class Redes:
+class Redes(Driver):
     def __init__(self):
-        self.driver = Driver(dbK.ADDRESS, dbK.USERNAME, dbK.PASSWORD)
+        super().__init__(dbK.ADDRESS, dbK.USERNAME, dbK.PASSWORD)
+
+        # Create username index:
+        self.query('CREATE INDEX FOR (n:user) ON (n.username)')
 
     def _add_user(self, type, username: str, properties: Union[dict, None] = None):
         labels = ['user']
@@ -23,7 +26,8 @@ class Redes:
             Exception('Internal error handling users')
 
 
-        self.driver.query()
+        query = self.node_to_str(None, labels, properties)
+        self.query(query)
 
 
     # username must be unique
@@ -36,5 +40,3 @@ class Redes:
     def create_company(self, username: str, **kwargs):
         self._add_user('company', username, kwargs)
 
-    @classmethod
-    def node_to_str(cls)
