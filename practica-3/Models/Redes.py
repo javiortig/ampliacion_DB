@@ -10,8 +10,8 @@ class Redes(Driver):
     def __init__(self):
         super().__init__(dbK.ADDRESS, dbK.USERNAME, dbK.PASSWORD)
 
-        # Create username index:
-        self.query('CREATE INDEX FOR (n:user) ON (n.username)')
+        # Create username index and constraint: 
+        self.query('CREATE CONSTRAINT IF NOT EXISTS ON (u:user) ASSERT u.username IS UNIQUE')
 
     def _add_user(self, type, username: str, properties: Union[dict, None] = None):
         labels = ['user']

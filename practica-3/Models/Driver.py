@@ -10,16 +10,12 @@ class Driver:
     def __init__(self, uri, user, password):
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
 
-        self.session_is_active = False # TODO: no se si se usara
 
     # Close connection  
     def close(self):
         self.driver.close()
 
-    # TODO: no se si será así 
-    # If atomic is true, the query will be directly executed, else it will be added to pipeline
-    # and executed when user calls execute()
-    def query(self, input: str, atomic: bool = True):
+    def query(self, input: str):
         with self.driver.session() as session:
             query_result = session.run(input)
             return query_result.values()
