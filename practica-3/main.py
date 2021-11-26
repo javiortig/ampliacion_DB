@@ -10,6 +10,7 @@ if __name__ == "__main__":
     #         + db.node_to_str('b', 'user', {'username': 'Javi', 'age': '24'})
     # print(query)
 
-    db.create_company('Apple')
-    db.create_university('Utad')
-    db.create_user('Pepe')
+    # db.create_company('Apple')
+    # db.create_university('Utad')
+    # db.create_user('Pepe')
+

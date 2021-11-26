@@ -25,15 +25,16 @@ class Redes(Driver):
         else:
             Exception('Internal error handling users')
 
+        if(properties):
+            properties['username'] = username
 
-        query = "CREATE " + self.node_to_str(None, labels, properties)
+        query = "CREATE " + self.node_to_str(labels=labels, properties=properties)
         self.query(query)
 
     def delete_user(self, username: str):
-        query = "DELETE DETATCH " + self.node_to_str(None, 'user', {'username': username})
+        query = "DELETE DETATCH " + self.node_to_str(labels='user', properties={'username': username})
         self.query(query)
     
-
     # username must be unique
     def create_user(self, username: str, **kwargs):
         self._add_user('basic', username, kwargs)
