@@ -16,9 +16,8 @@ class Redes(Driver):
     def _add_user(self, type, username: str, properties: Union[dict, None] = None):
         labels = ['user']
 
-        if (type == 'basic'):
-            pass 
-        elif (type == 'university'):
+
+        if (type == 'university'):
             labels.append('university')
         elif (type == 'company'):
             labels.append('company')
@@ -26,9 +25,13 @@ class Redes(Driver):
             Exception('Internal error handling users')
 
 
-        query = self.node_to_str(None, labels, properties)
+        query = "CREATE " + self.node_to_str(None, labels, properties)
         self.query(query)
 
+    def delete_user(self, username: str):
+        query = "DELETE DETATCH " + self.node_to_str(None, 'user', {'username': username})
+        self.query(query)
+    
 
     # username must be unique
     def create_user(self, username: str, **kwargs):

@@ -12,6 +12,7 @@
         {    
             "username": "Pepito",
             "type": "basic",
+
             "publishings": [
                 
             ]
@@ -28,7 +29,7 @@
             "type": "basic",
             "publishings": [
                 {
-                    "title": "Wook is brown",
+                    "title": "Wood is brown",
                     "date": "ISO",
                     "body": "blablablablablablablablablablablablablablablablablablablabla"
                 },
@@ -78,3 +79,5 @@
             ],
     # TODO: conversaciones y mensajes
 }
+
+#db.query("LOAD CSV FROM 'file:////user_data.csv' AS data create (a:user {username:data[1]})") 
