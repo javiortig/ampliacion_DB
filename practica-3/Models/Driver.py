@@ -10,7 +10,6 @@ class Driver:
     def __init__(self, uri, user, password):
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
 
-
     # Close connection  
     def close(self):
         self.driver.close()

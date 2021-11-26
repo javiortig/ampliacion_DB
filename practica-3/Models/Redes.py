@@ -11,6 +11,7 @@ class Redes(Driver):
         super().__init__(dbK.ADDRESS, dbK.USERNAME, dbK.PASSWORD)
 
         # Create username index and constraint: 
+        #TODO: crear indexado para las fechas de los mensajes
         self.query('CREATE CONSTRAINT IF NOT EXISTS ON (u:user) ASSERT u.username IS UNIQUE')
 
     def _add_user(self, type, username: str, properties: Union[dict, None] = None):
@@ -43,3 +44,7 @@ class Redes(Driver):
     def create_company(self, username: str, **kwargs):
         self._add_user('company', username, kwargs)
 
+
+# "match (username: javi)-[m:message fecha]-(username: javi)"
+# "order by m.date"
+# "return m"
