@@ -88,6 +88,7 @@ class Driver:
                         "RETURN a.message + ', from node ' + id(a)", message=message)
         return result.single()[0]
 
+    @staticmethod
     def return_to_str(labels: Union[list, str] = "*", orderByAsc: Union[bool, None] = None, skip: Union[int,None] = 0, limit: Union[int,None] = None):
 	   	result = " return "
 	   	if type(labels) is str:
@@ -107,9 +108,17 @@ class Driver:
 	   	return result
     
     @staticmethod
-    def friend_and_family_to_str(properties: Union[dict, None] = None):
+    def _node_relation_to_str(labels: Union[list, str, None] = None,properties: Union[dict, None] = None):
     	return "match " + db.node_to_str(labels=['user'], properties=properties) \
-            + db.relation_to_str(labels='friendship|friend*1', direction='-')\
+            + db.relation_to_str(labels=labels, direction='-')\
             + db.node_to_str('p', 'user') + db.get_result("distinct p")
+   	
+   	@staticmethod
+   	def friend_and_family_to_str(properties: Union[dict, None] = None):
+   		return _node_relation_to_str(labels='friendship|friend*1',properties=properties)
+   		
+   	@staticmethod
+   	def family_of_family_to_str(properties: Union[dict, None] = None):
+   		return _node_relation_to_str(labels='friendship*2',properties=properties)
         
 
