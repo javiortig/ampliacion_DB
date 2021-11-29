@@ -102,11 +102,11 @@ class Redes(Driver):
                                                 # node_b_identifier="p",\
                                                 # return_labels="distinct p")
         return " match " + cls.node_to_str(     labels=['user'],\
-                                                properties=properties),\
+                                                properties=properties)\
                          + cls.relation_to_str( labels='friendship|friend*1',\
-                                                direction='-'),\
+                                                direction='-')\
                          + cls.node_to_str(     labels=['user'],\
-                                                identifier="p"),\
+                                                identifier="p")\
                          + cls.return_to_str(   labels="distinct p")
    		
     #Q2
@@ -117,11 +117,11 @@ class Redes(Driver):
         #                                         node_b_identifier="p",\
         #                                         return_labels="distinct p")
         return " match " + cls.node_to_str(     labels=['user'],\
-                                                properties=properties),\
+                                                properties=properties)\
                          + cls.relation_to_str( labels='friendship*2',\
-                                                direction='-'),\
+                                                direction='-')\
                          + cls.node_to_str(     identifier="p",\
-                                                labels=['user']),\
+                                                labels=['user'])\
                          + cls.return_to_str(   labels="distinct p") 
     
     #Q3
@@ -139,13 +139,13 @@ class Redes(Driver):
         #                                         return_labels="r",\
         #                                         orderByAsc="r.data")
         return " match " + cls.node_to_str(     labels=['user'],\
-                                                properties=node_a_properties),\
+                                                properties=node_a_properties)\
                          + cls.relation_to_str( identifier="r",\
                                                 labels="message",\
-                                                direction=">"),\
+                                                direction=">")\
                          + cls.node_to_str(     labels=['user'],\
-                                                properties=node_b_properties),\
-                         + cls.condition_to_str(condition=f'r.data > datetime({datetime})',\
+                                                properties=node_b_properties)\
+                         + cls.condition_to_str(condition=f'r.data > datetime({datetime})')\
                          + cls.return_to_str(   labels="r",orderByAsc="r.data")
 
     #Q4
@@ -159,12 +159,12 @@ class Redes(Driver):
         #                                         return_labels="r",\
         #                                         orderByAsc="r.data")
         return " match " + cls.node_to_str(     labels=['user'],\
-                                                properties=node_a_properties),\
+                                                properties=node_a_properties)\
                          + cls.relation_to_str( identifier="r",\
                                                 labels="message",\
-                                                direction='-'),\
+                                                direction='-')\
                          + cls.node_to_str(     labels=['user'],\
-                                                properties=node_b_properties),\
+                                                properties=node_b_properties)\
                          + cls.return_to_str(   labels="r",\
                                                 orderByAsc="r.data")
 
@@ -189,34 +189,32 @@ class Redes(Driver):
     #TODO camviar lo del roderByAsc por numSaltos
     @classmethod
     def distance_new_relationships(cls, distance: int): -> str
-        return cls.simple_node_relation_to_str( path="path",\
-                                                node_a_identifier="inicio",\
-                                                node_b_identifier="final",\
-                                                relation_labels=f'1..{distance}',\
-                                                direction=">",\
-                                                condition="inicio < final",\
-                                                # using=["path", '[[ID(inicio), ID(final)],"Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros', "length(path) as numSaltos"],\
-                                                using=["path", '["Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros', "length(path) as numSaltos"],\
-                                                afterUsingCondition="numSaltos>1",\
-                                                return_labels=["numSaltos", "segundos_y_terceros"],\
+        # return cls.simple_node_relation_to_str( path="path",\
+        #                                         node_a_identifier="inicio",\
+        #                                         node_b_identifier="final",\
+        #                                         relation_labels=f'1..{distance}',\
+        #                                         direction=">",\
+        #                                         condition="inicio < final",\
+        #                                         # using=["path", '[[ID(inicio), ID(final)],"Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros', "length(path) as numSaltos"],\
+        #                                         using=["path", '["Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros', "length(path) as numSaltos"],\
+        #                                         afterUsingCondition="numSaltos>1",\
+        #                                         return_labels=["numSaltos", "segundos_y_terceros"],\
+        #                                         orderByAsc="length(path)",\
+        #                                         skip=1)
+        return " match path=" + cls.node_to_str(identifier="inicio",\
+                                                labels="['user']")\
+                        + cls.relation_to_str(  labels=f'1..{distance}',\
+                                                direction=">")\
+                        + cls.node_to_str(      identifier="final",\
+                                                labels="['user']")\
+                        + cls.condition_to_str( condition="inicio < final")\
+                        + cls.using_to_str(     using=["path", '["Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros', "length(path) as numSaltos"])\
+                        + cls.condition_to_str( condition="numSaltos>1")\
+                        + cls.return_to_str(    labels=["numSaltos", "segundos_y_terceros"],\
                                                 orderByAsc="length(path)",\
                                                 skip=1)
-        return " match path=" + cls.node_to_str(identifier="inicio",labels=node_a_labels,properties=node_a_properties),\
-            + cls.relation_to_str(identifier=relation_identifier,labels=f'1..{distance}',properties=relation_properties,direction=direction),\
-            + cls.node_to_str(identifier="final",labels=node_b_labels,properties=node_b_properties),\
-            + (cls.condition_to_str(condition=condition) if condition is not None else ""),\
-            + (cls.using_to_str(using=using) if using is not None else ""),\
-            + (cls.condition_to_str(condition=afterUsingCondition) if afterUsingCondition is not None else ""),\
-            + cls.return_to_str(labels=return_labels,orderByAsc=orderByAsc,orderByDesc=orderByDesc,skip=skip,limit=limit)
 
-MATCH path = (inicio:Prueba)-[rs*1..6]->(final:Prueba)
-where inicio < final
-with path, [[ID(inicio), ID(final)],"Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros, length(path) as numSaltos where numSaltos>1
-RETURN numSaltos, segundos_y_terceros as Segundos ORDER BY length(path) skip 1 
-    
-    
-#  familia, amistad, académico o laboral
-
-# "match (username: javi)-[m:message fecha]-(username: javi)"
-# "order by m.date"
-# "return m"
+# MATCH path = (inicio:Prueba)-[rs*1..6]->(final:Prueba)
+# where inicio < final
+# with path, [[ID(inicio), ID(final)],"Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros, length(path) as numSaltos where numSaltos>1
+# RETURN numSaltos, segundos_y_terceros as Segundos ORDER BY length(path) skip 1 
