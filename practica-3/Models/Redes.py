@@ -45,12 +45,10 @@ class Redes(Driver):
     def create_company(self, username: str, **kwargs):
         self._add_user('company', username, kwargs)
 
-    def _obtain_related(self,relation_type: str,username: str, relationProperties: Union[dict, None] = None,  userProperties: Union[dict, None] = None):
-        return self.node_to_str(username=username,properties=userProperties)+self.relation_to_str(labels=relation_type,direction='-',properties=properties)+node_to_str(identifier="related"+" return related")
-        
-    def obtain_friends(self,username: str,, relationProperties: Union[dict, None] = None,  userProperties: Union[dict, None] = None):
-        _obtain_related(relation_type="friends",relationProperties=relationProperties,userProperties=userProperties)
-
+    
+    
+    
+#  familia, amistad, académico o laboral
 
 # "match (username: javi)-[m:message fecha]-(username: javi)"
 # "order by m.date"

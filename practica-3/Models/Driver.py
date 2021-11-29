@@ -87,3 +87,29 @@ class Driver:
                         "SET a.message = $message "
                         "RETURN a.message + ', from node ' + id(a)", message=message)
         return result.single()[0]
+
+    def return_to_str(labels: Union[list, str] = "*", orderByAsc: Union[bool, None] = None, skip: Union[int,None] = 0, limit: Union[int,None] = None):
+	   	result = " return "
+	   	if type(labels) is str:
+	   		result += labels
+	   	else:
+	   		result = ",".join(labels)
+	   	if orderByAsc is not None:
+	   		result += " order by"
+	   		if orderByAsc:
+	   			result += " asc"
+	   		else:
+	   			result += " desc"
+	   	if skip > 0:
+	   		result += f' skip {skip}'
+	   	if limit is not None:
+	   		result += f' limit {limit}'
+	   	return result
+    
+    @staticmethod
+    def friend_and_family_to_str(properties: Union[dict, None] = None):
+    	return "match " + db.node_to_str(labels=['user'], properties=properties) \
+            + db.relation_to_str(labels='friendship|friend*1', direction='-')\
+            + db.node_to_str('p', 'user') + db.get_result("distinct p")
+        
+

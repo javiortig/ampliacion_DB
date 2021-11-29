@@ -10,6 +10,11 @@ if __name__ == "__main__":
     #         + db.node_to_str('b', 'user', {'username': 'Javi', 'age': '24'})
     # print(query)
 
+#     query = db.node_to_str(labels=['user'], properties=properties) \
+#             + db.relation_to_str('friendship|friend*1' direction='-')\
+#             + db.node_to_str('p', 'user') + 
+
+
     # db.create_company('Apple')
     # db.create_university('Utad')
     # db.create_user('Pepe')
