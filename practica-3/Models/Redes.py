@@ -258,35 +258,3 @@ class Redes(Driver):
 # where inicio < final
 # with path, [[ID(inicio), ID(final)],"Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros, length(path) as numSaltos where numSaltos>1
 # RETURN numSaltos, segundos_y_terceros as Segundos ORDER BY length(path) skip 1 
-
-    
-
-
-    def new_message_to_str(cls,message: str, datetime: str, node_a_properties: Union[dict, None] = None, node_b_properties:  Union[dict, None] = None):
-        #TODO el comprobar si ta correcto:
-        if not comprobarDatetime(datetime):
-            raise("The datetime is incorrect")
-        return ' match ' + cls.node_to_str(     identifier="a",\
-                                                labels="user",\
-                                                properties=node_a_properties)\
-                        + "," +
-                        + cls.relation_to_str(  identifier="b",\
-                                                labels="user",\
-                                                properties=node_b_properties)\
-                        + cls.merge_to_str(     merge=  cls.node_to_str(        labels="a")\
-                                                        + cls.relation_to_str(  labels="converInfo",\
-                                                                                direction=">")\
-                                                        + cls.node_to_str(      identifier="convNode",\
-                                                                                labels="Conversation")\
-                                                        + cls.relation_to_str(  labels="converInfo",\
-                                                                                direction="<"),\
-                                                on_create=  {"convNode.num_seq":"0"},\
-                                                on_match=   {"convNode.num_seq":"convNode.num_seq + 1"})\
-                        + cls.create_to_str(    create=[    cls.node_to_str(identifier="a")\
-                                                            + cls.relation_to_str(      labels="message",\
-                                                                                        properties={    "text":message,\
-                                                                                                        "datetime":f'datetime({datetime})',\
-                                                                                                        "num_seq":"convNode.num_seq"})\
-                                                            + cls.node_to_str(identifier="b")])
-                         
-        # return " match (a:User {" + cls._dict_to_str(elements=node_a_properties,separator_dict=":") + "}),(b:User {" + cls._dict_to_str(elements=node_b_properties,separator_dict=":") + "}) merge (a)-[:converInfo]->(convNode:Conversacion)<-[:converInfo]-(b) on create set convNode.numSeq = 0 on match set convNode.numSeq = convNode.numSeq + 1 create (a)-[:message {text:" + message + ",numSeq:convNode.numSeq,data:datetime(" + datetime + ")}]->(b)"
