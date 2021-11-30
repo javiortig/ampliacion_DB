@@ -19,13 +19,6 @@ class Driver:
             query_result = session.run(input)
             return query_result.values()
 
-        
-    def execute(self):
-        pass
-
-    def comprobarDatetime(cls,datetime: str) -> bool :
-        return True
-
     @classmethod
     # This function is used just to reuse code
     def _inner_query_str_values(cls, identifier: Union[str, None] = None, labels: Union[list, str, None] = None, properties: Union[dict, None] = None)-> str:
