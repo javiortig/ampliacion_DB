@@ -44,132 +44,102 @@ class Redes(Driver):
 
     def create_company(self, username: str, **kwargs):
         self._add_user('company', username, kwargs)
+        
+    @classmethod
+    def username_dict(cls, username: str) -> str :
+        return " {username:\""+username+"\"} "
+
+    @classmethod 
+    def create_publication(cls, author: str, date: str, title: str, body: str, mentioned_usernames: Union[list,str,None] = None ):
+        query_text = 'match (_author:user  {username:"'+author+'"}) '
+        query_text_mentions = ""
+        if mentioned_usernames is not None:
+            if type(mentioned_usernames) is list:
+                for u in mentioned_usernames:
+                    query_text += (",("+u+":user {username:\""+u+"\"}) " if type(u) is str else "")
+                    query_text_mentions += ",("+u+")<-[:mention]-(_p)"
+            else:
+                query_text += (",("+mentioned_usernames+":user {username:\""+author+"\"} " if mentioned_usernames is not None else "")
+                query_text_mentions += ",("+mentioned_usernames+")<-[:mention]-(_p)"
+        query_text += ' create (_author)-[:publishes]->(_p:publishing  {author:"'+ author +'",title:"'+ title +'",body:"'+ body +'",date:"'+ date +'"})'
+        query_text += query_text_mentions
+        cls.query(query_text)
+        return query_text
     
     @classmethod
-    def new_message_to_str(cls, message: str, datetime: str, node_a_properties: Union[dict, None] = None, node_b_properties:  Union[dict, None] = None) -> str :
-        return " match (a:User {" + cls._dict_to_str(elements=node_a_properties,separator_dict=":") + "}),(b:User {" + cls._dict_to_str(elements=node_b_properties,separator_dict=":") + "}) \
-            merge (a)-[:converInfo]->(convNode:Conversacion)<-[:converInfo]-(b) on create set convNode.numSeq = 0 on match set convNode.numSeq = convNode.numSeq + 1 create (a)-[:message {text: " + message + ",numSeq:convNode.numSeq,data:datetime(" + datetime + ")}]->(b)"
-
+    def new_message_to_str(cls, message: str, datetime: str, sender_username: str, receiver_username:  str ) -> str :
+        # cls._dict_to_str(elements=node_b_properties,separator_dict=":")
+        return " match (a:user "+cls.username_dict(sender_username)+"),(b:user "+cls.username_dict(receiver_username)+") \
+            merge (a)-[:chatInfo]->(convNode:chat)<-[:chatInfo]-(b) on create set convNode.sec = 0 on match set convNode.sec = convNode.sec + 1 create (a)-[:message {text:\"" + message + "\",sec:convNode.sec,date:datetime(\"" + datetime + "\")}]->(b)"
 
     #Q1
-   	@classmethod
-   	def friend_and_family_to_str(cls,properties: Union[dict, None] = None) -> str :
-        # return cls.simple_node_relation_to_str( node_a_properties=properties,\
-                                                # relation_labels='friendship|friend*1',\
-                                                # node_b_identifier="p",\
-                                                # return_labels="distinct p")
-        return " match " + cls.node_to_str(     labels=['user'],\
-                                                properties=properties)\
-                            + cls.relation_to_str( labels='friendship|friend*1',\
-                                                direction='-')\
-                            + cls.node_to_str(     labels=['user'],\
-                                                identifier="p")\
-                            + cls.return_to_str(   labels="distinct p")
-   		
+    @classmethod
+    def friend_and_family_to_str(cls, username: str) -> str :
+        return " match "+\
+            cls.node_to_str(labels=['user'], properties=cls.username_dict(username))+\
+            cls.relation_to_str( labels='family|friend*1', direction='-')+\
+            cls.node_to_str(labels=['user'], identifier="p")+\
+            cls.return_to_str(labels="distinct p")
+        
     #Q2
-   	@staticmethod
-   	def family_of_family_to_str(cls,properties: Union[dict, None] = None) -> str :
-   		# return cls.simple_node_relation_to_str( node_a_properties=properties,\
-        #                                         relation_labels='friendship*2',\
-        #                                         node_b_identifier="p",\
-        #                                         return_labels="distinct p")
-        return " match " + cls.node_to_str(     labels=['user'],\
-                                                properties=properties)\
-                        + cls.relation_to_str( labels='friendship*2',\
-                                                direction='-')\
-                        + cls.node_to_str(     identifier="p",\
-                                                labels=['user'])\
-                        + cls.return_to_str(   labels="distinct p") 
-    
+    @staticmethod
+    def family_of_family_to_str(cls, username: str) -> str :
+        return " match "+\
+            cls.node_to_str(labels=['user'], properties=cls.username_dict(username))+\
+            cls.relation_to_str( labels='family*2', direction='-')+\
+            cls.node_to_str(identifier="p", labels=['user'])+\
+            cls.return_to_str(labels="distinct p")
+        
     #Q3
     @staticmethod
-    def messages_after_data_to_str(cls,datetime: str,node_a_properties: Union[dict, None] = None, node_b_properties:  Union[dict, None] = None) -> str :
-        # return cls.simple_node_relation_to_str( node_a_properties=node_a_properties,\
-        #                                         node_b_properties=node_b_properties,\
-        #                                         relation_identifier="r",\
-        #                                         relation_labels="message",\
-        #                                         direction=">",\
-        #                                         condition=f'r.data > datetime({datetime})',\
-        #                                         return_labels="r",\
-        #                                         orderByAsc="r.data")
-        return " match " + cls.node_to_str(     labels=['user'],\
-                                                properties=node_a_properties)\
-                        + cls.relation_to_str( identifier="r",\
-                                                labels="message",\
-                                                direction=">")\
-                        + cls.node_to_str(     labels=['user'],\
-                                                properties=node_b_properties)\
-                        + cls.condition_to_str(condition=f'r.data > datetime({datetime})')\
-                        + cls.return_to_str(   labels="r",orderByAsc="r.data")
+    def messages_after_data_to_str(cls,datetime: str,username_a: str, username_b: str) -> str :
+        return " match "+\
+            cls.node_to_str(labels=['user'], properties=cls.username_dict(username_a))+\
+            cls.relation_to_str( identifier="r", labels="message",direction=">")+\
+            cls.node_to_str(labels=['user'], properties=cls.username_dict(username_b))+\
+            " where r.date > datetime(\""+datetime+"\") "+\
+            cls.return_to_str(labels="r", orderByAsc="r.date")
 
     #Q4
     @classmethod
-    def conversation_between_users_to_str(cls, node_a_properties: Union[dict, None] = None, node_b_properties:  Union[dict, None] = None) -> str :
+    def conversation_between_users_to_str(cls, username_a: str, username_b: str) -> str :
     # match (a:Prueba {nork:1})-[r:mensaje]-(b:Prueba {nork:7}) return r order by r.num_seq asc
-        # return cls.simple_node_relation_to_str( node_a_properties=node_a_properties,\
-        #                                         node_b_properties=node_b_properties,\
-        #                                         relation_identifier="r",\
-        #                                         relation_labels="message",\
-        #                                         return_labels="r",\
-        #                                         orderByAsc="r.data")
-        return " match " + cls.node_to_str(     labels=['user'],\
-                                                properties=node_a_properties)\
-                        + cls.relation_to_str( identifier="r",\
-                                                labels="message",\
-                                                direction='-')\
-                        + cls.node_to_str(     labels=['user'],\
-                                                properties=node_b_properties)\
-                        + cls.return_to_str(   labels="r",\
-                                                orderByAsc="r.num_seq")
+        return " match "+\
+            cls.node_to_str(labels=['user'], properties=cls.username_dict(username_a))+\
+            cls.relation_to_str(identifier="r", labels="message", direction='-')+\
+            cls.node_to_str(labels=['user'], properties=cls.username_dict(username_b))+\
+            cls.return_to_str(labels="r", orderByAsc="r.sec")
 
     #Q5
     @classmethod
-    def mentioned_users_with_laboral_relation(cls, properties: Union[dict, None] = None) -> str :
-        return " match " + cls.node_to_str(     identifier="publicante",\
-                                                labels=['user'],\
-                                                properties=properties)\
-                        + cls.relation_to_str( labels=['publishes'],\
-                                                direction=">")\
-                        + cls.node_to_str(     labels=['publication'])\
-                        + cls.relation_to_str( labels=['mention'])\
-                        + cls.node_to_str(     identifier="mentioned",\
-                                                labels=['user'])\
-                        + cls.relation_to_str( labels=['laboral'])\
-                        + cls.node_to_str(     identifier="publicante")\
-                        + cls.relation_to_str( labels="distinct mentioned")
+    def mentioned_users_with_laboral_relation(cls, username: str) -> str :
+        return " match "+\
+            cls.node_to_str(identifier="publicante", labels=['user'], properties=cls.username_dict(username))+\
+            cls.relation_to_str(labels=['publishes'], direction=">")+\
+            cls.node_to_str(labels=['publishing'])+\
+            cls.relation_to_str(labels=['mention'])+\
+            cls.node_to_str(identifier="mentioned", labels=['user'])+\
+            cls.relation_to_str(labels=['work'])+\
+            cls.node_to_str(identifier="publicante")+\
+            cls.return_to_str(labels="distinct mentioned")
 
     #Q6
     #TODO no estoy seguro sobre el ASC o DESC
     #TODO camviar lo del roderByAsc por numSaltos
     @classmethod
     def distance_new_relationships(cls, distance: int) -> str :
-        # return cls.simple_node_relation_to_str( path="path",\
-        #                                         node_a_identifier="inicio",\
-        #                                         node_b_identifier="final",\
-        #                                         relation_labels=f'1..{distance}',\
-        #                                         direction=">",\
-        #                                         condition="inicio < final",\
-        #                                         # using=["path", '[[ID(inicio), ID(final)],"Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros', "length(path) as numSaltos"],\
-        #                                         using=["path", '["Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros', "length(path) as numSaltos"],\
-        #                                         afterUsingCondition="numSaltos>1",\
-        #                                         return_labels=["numSaltos", "segundos_y_terceros"],\
-        #                                         orderByAsc="length(path)",\
-        #                                         skip=1)
-        return " match path=" + cls.node_to_str(identifier="inicio",\
-                                                labels="['user']")\
-                        + cls.relation_to_str(  labels=f'1..{distance}',\
-                                                direction=">")\
-                        + cls.node_to_str(      identifier="final",\
-                                                labels="['user']")\
-                        + cls.condition_to_str( condition="inicio < final")\
-                        + cls.using_to_str(     using=["path", '["Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros', "length(path) as numSaltos"])\
-                        + cls.condition_to_str( condition="numSaltos>1")\
-                        + cls.return_to_str(    labels=["numSaltos", "segundos_y_terceros"],\
-                                                orderByAsc="length(path)",\
-                                                skip=1)
+    # cls.using_to_str(     using=["path", '["Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros', "length(path) as numSaltos"])\
+        return " match path = "+\
+            cls.node_to_str(identifier="inicio", labels="['user']")+\
+            cls.relation_to_str(labels=f'1..{distance}', direction=">")+\
+            cls.node_to_str(identifier="final", labels="['user']")+\
+            ' where inicio < final'+\
+            ' with path, ["Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros, length(path) as numSaltos'+\
+            ' where numSaltos>1'+\
+            cls.return_to_str(labels=["numSaltos", "segundos_y_terceros"], orderByAsc="length(path)", skip=1)
 
-# MATCH path = (inicio:Prueba)-[rs*1..6]->(final:Prueba)
-# where inicio < final
-# with path, [[ID(inicio), ID(final)],"Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros, length(path) as numSaltos where numSaltos>1
-# RETURN numSaltos, segundos_y_terceros as Segundos ORDER BY length(path) skip 1 
+    # MATCH path = (inicio:Prueba)-[rs*1..6]->(final:Prueba)
+    # where inicio < final
+    # with path, [[ID(inicio), ID(final)],"Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros, length(path) as numSaltos where numSaltos>1
+    # RETURN numSaltos, segundos_y_terceros as Segundos ORDER BY length(path) skip 1 
 
