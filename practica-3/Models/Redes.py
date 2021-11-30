@@ -45,6 +45,14 @@ class Redes(Driver):
     def create_company(self, username: str, **kwargs):
         self._add_user('company', username, kwargs)
 
+    def _dict_to_str(cls,elements: dict, separator_dict: str ="="):
+        return cls._elements_to_str([cls._elements_to_str(separator=separator_dict,elements=a) for a in [(k,v) for k,v in elements.items()]])
+
+    def merge_to_str(cls,merge: Union[list, str], on_create: Union[dict, str, None] = None, on_match: Union[dict, str, None] = None):
+        return " merge " +cls._elements_to_str(elements=merge)\
+                        + (" on create set " + (on_create if type(on_create) is str else (cls._dict_to_str(elements=on_create) if on_create is not None else "")))\
+                        + (" on match set " + (on_match if type(on_match) is str else (cls._dict_to_str(elements=on_match) if on_match is not None else "")))
+
     @staticmethod
     def return_to_str(cls,labels: Union[list, str] = "*", orderByAsc: Union[str, None] = None,  orderByDesc: Union[str, None] = None, skip: Union[int,None] = 0, limit: Union[int,None] = None): -> str
 	   	if orderByAsc is not None and orderByDesc is not None:
@@ -75,7 +83,7 @@ class Redes(Driver):
     #         + cls.return_to_str(labels=return_labels,orderByAsc=orderByAsc,orderByDesc=orderByDesc,skip=skip,limit=limit)
    	
     @staticmethod
-    def _elements_to_str(cls, separator: str =",", elements: Union[list,str]): -> str
+    def _elements_to_str(cls, elements: Union[list,str], separator: str =","): -> str
         return elements if type(elements) is str else separator.join(elements)
 
     @staticmethod
@@ -90,6 +98,10 @@ class Redes(Driver):
     @staticmethod
     def using_to_str(cls,using: Union[list,str]): -> str
         return cls._inner_query_clauses("with",using)
+    
+    @staticmethod
+    def create_to_str(cls,create: Union[list,str]): -> str
+        return cls._inner_query_clauses("create",create)
 
 
 
@@ -151,7 +163,7 @@ class Redes(Driver):
     #Q4
     @classmethod
     def conversation_between_users_to_str(cls, node_a_properties: Union[dict, None] = None, node_b_properties:  Union[dict, None] = None): -> str
-    match (a:Prueba {nork:1})-[r:mensaje]-(b:Prueba {nork:7}) return r order by r.data asc
+    # match (a:Prueba {nork:1})-[r:mensaje]-(b:Prueba {nork:7}) return r order by r.data asc
         # return cls.simple_node_relation_to_str( node_a_properties=node_a_properties,\
         #                                         node_b_properties=node_b_properties,\
         #                                         relation_identifier="r",\
@@ -218,3 +230,35 @@ class Redes(Driver):
 # where inicio < final
 # with path, [[ID(inicio), ID(final)],"Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros, length(path) as numSaltos where numSaltos>1
 # RETURN numSaltos, segundos_y_terceros as Segundos ORDER BY length(path) skip 1 
+
+    
+
+
+    def new_message_to_str(cls,message: str, datetime: str, node_a_properties: Union[dict, None] = None, node_b_properties:  Union[dict, None] = None):
+        #TODO el comprobar si ta correcto:
+        if not comprobarDatetime(datetime):
+            raise("The datetime is incorrect")
+        return ' match ' + cls.node_to_str(     identifier="a",\
+                                                labels="user",\
+                                                properties=node_a_properties)\
+                        + "," +
+                        + cls.relation_to_str(  identifier="b",\
+                                                labels="user",\
+                                                properties=node_b_properties)\
+                        + cls.merge_to_str(     merge=  cls.node_to_str(        labels="a")\
+                                                        + cls.relation_to_str(  labels="converInfo",\
+                                                                                direction=">")\
+                                                        + cls.node_to_str(      identifier="convNode",\
+                                                                                labels="Conversation")\
+                                                        + cls.relation_to_str(  labels="converInfo",\
+                                                                                direction="<"),\
+                                                on_create=  {"convNode.num_seq":"0"},\
+                                                on_match=   {"convNode.num_seq":"convNode.num_seq + 1"})\
+                        + cls.create_to_str(    create=[    cls.node_to_str(identifier="a")\
+                                                            + cls.relation_to_str(      labels="message",\
+                                                                                        properties={    "text":message,\
+                                                                                                        "datetime":f'datetime({datetime})',\
+                                                                                                        "num_seq":"convNode.num_seq"})\
+                                                            + cls.node_to_str(identifier="b")])
+                         
+        return " match (a:User {" + cls._dict_to_str(elements=node_a_properties,separator_dict=":") + "}),(b:User {" + cls._dict_to_str(elements=node_b_properties,separator_dict=":") + "}) merge (a)-[:converInfo]->(convNode:Conversacion)<-[:converInfo]-(b) on create set convNode.numSeq = 0 on match set convNode.numSeq = convNode.numSeq + 1 create (a)-[:message {text:" + message + ",numSeq:convNode.numSeq,data:datetime(" + datetime + ")}]->(b)"
