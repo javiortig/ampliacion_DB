@@ -151,7 +151,7 @@ random.shuffle(users)
 for i in range(n_chats):
     chat = {}
     chat['messages'] = []
-    print(i)
+#     print(i)
     if (len(users) <= 2):
         break
 
@@ -182,7 +182,7 @@ for i in range(n_chats):
     chat['sec'] = j
     result['chats'].append(chat)
 
-print('n_chats = ' + str(n_chats))
+# print('n_chats = ' + str(n_chats))
 
 with open('data.json', 'w') as fp:
     json.dump(result, fp)
