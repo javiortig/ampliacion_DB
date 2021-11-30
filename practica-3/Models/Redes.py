@@ -4,16 +4,11 @@ from constants import neo4j as dbK
 from typing import Union
 
 # This class will be accessed from the user
-
-#TODO: hacer mejor que sea una herencia
 class Redes(Driver):
     def __init__(self):
         super().__init__(dbK.ADDRESS, dbK.USERNAME, dbK.PASSWORD)
 
         # Create username index and constraint: 
-        #TODO: crear indexado para las fechas de los mensajes
-        #TODO es esto asi?
-        self.query('CREATE CONSTRAINT IF NOT EXISTS ON (m:message) ASSERT m.date IS UNIQUE')
         self.query('CREATE CONSTRAINT IF NOT EXISTS ON (u:user) ASSERT u.username IS UNIQUE')
 
     def _add_user(self, type, username: str, properties: Union[dict, None] = None):
