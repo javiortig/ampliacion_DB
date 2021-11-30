@@ -103,6 +103,34 @@ class Redes(Driver):
     def create_to_str(cls,create: Union[list,str]): -> str
         return cls._inner_query_clauses("create",create)
 
+    def new_message_to_str(cls,message: str, datetime: str, node_a_properties: Union[dict, None] = None, node_b_properties:  Union[dict, None] = None):
+        #TODO el comprobar si ta correcto:
+        if not comprobarDatetime(datetime):
+            raise("The datetime is incorrect")
+        return ' match ' + cls.node_to_str(     identifier="a",\
+                                                labels="user",\
+                                                properties=node_a_properties)\
+                        + "," +
+                        + cls.relation_to_str(  identifier="b",\
+                                                labels="user",\
+                                                properties=node_b_properties)\
+                        + cls.merge_to_str(     merge=  cls.node_to_str(        labels="a")\
+                                                        + cls.relation_to_str(  labels="converInfo",\
+                                                                                direction=">")\
+                                                        + cls.node_to_str(      identifier="convNode",\
+                                                                                labels="Conversation")\
+                                                        + cls.relation_to_str(  labels="converInfo",\
+                                                                                direction="<"),\
+                                                on_create=  {"convNode.num_seq":"0"},\
+                                                on_match=   {"convNode.num_seq":"convNode.num_seq + 1"})\
+                        + cls.create_to_str(    create=[    cls.node_to_str(identifier="a")\
+                                                            + cls.relation_to_str(      labels="message",\
+                                                                                        properties={    "text":message,\
+                                                                                                        "datetime":f'datetime({datetime})',\
+                                                                                                        "num_seq":"convNode.num_seq"})\
+                                                            + cls.node_to_str(identifier="b")])
+                         
+        # return " match (a:User {" + cls._dict_to_str(elements=node_a_properties,separator_dict=":") + "}),(b:User {" + cls._dict_to_str(elements=node_b_properties,separator_dict=":") + "}) merge (a)-[:converInfo]->(convNode:Conversacion)<-[:converInfo]-(b) on create set convNode.numSeq = 0 on match set convNode.numSeq = convNode.numSeq + 1 create (a)-[:message {text:" + message + ",numSeq:convNode.numSeq,data:datetime(" + datetime + ")}]->(b)"
 
 
 
@@ -163,7 +191,7 @@ class Redes(Driver):
     #Q4
     @classmethod
     def conversation_between_users_to_str(cls, node_a_properties: Union[dict, None] = None, node_b_properties:  Union[dict, None] = None): -> str
-    # match (a:Prueba {nork:1})-[r:mensaje]-(b:Prueba {nork:7}) return r order by r.data asc
+    # match (a:Prueba {nork:1})-[r:mensaje]-(b:Prueba {nork:7}) return r order by r.num_seq asc
         # return cls.simple_node_relation_to_str( node_a_properties=node_a_properties,\
         #                                         node_b_properties=node_b_properties,\
         #                                         relation_identifier="r",\
@@ -178,7 +206,7 @@ class Redes(Driver):
                          + cls.node_to_str(     labels=['user'],\
                                                 properties=node_b_properties)\
                          + cls.return_to_str(   labels="r",\
-                                                orderByAsc="r.data")
+                                                orderByAsc="r.num_seq")
 
     #Q5
     @classmethod
@@ -261,4 +289,4 @@ class Redes(Driver):
                                                                                                         "num_seq":"convNode.num_seq"})\
                                                             + cls.node_to_str(identifier="b")])
                          
-        return " match (a:User {" + cls._dict_to_str(elements=node_a_properties,separator_dict=":") + "}),(b:User {" + cls._dict_to_str(elements=node_b_properties,separator_dict=":") + "}) merge (a)-[:converInfo]->(convNode:Conversacion)<-[:converInfo]-(b) on create set convNode.numSeq = 0 on match set convNode.numSeq = convNode.numSeq + 1 create (a)-[:message {text:" + message + ",numSeq:convNode.numSeq,data:datetime(" + datetime + ")}]->(b)"
+        # return " match (a:User {" + cls._dict_to_str(elements=node_a_properties,separator_dict=":") + "}),(b:User {" + cls._dict_to_str(elements=node_b_properties,separator_dict=":") + "}) merge (a)-[:converInfo]->(convNode:Conversacion)<-[:converInfo]-(b) on create set convNode.numSeq = 0 on match set convNode.numSeq = convNode.numSeq + 1 create (a)-[:message {text:" + message + ",numSeq:convNode.numSeq,data:datetime(" + datetime + ")}]->(b)"
