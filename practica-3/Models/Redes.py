@@ -47,10 +47,6 @@ class Redes(Driver):
     
     @classmethod
     def new_message_to_str(cls, message: str, datetime: str, node_a_properties: Union[dict, None] = None, node_b_properties:  Union[dict, None] = None) -> str :
-        #TODO el comprobar si ta correcto:
-        if not cls.comprobarDatetime(datetime):
-            raise("The datetime is incorrect")
-
         return " match (a:User {" + cls._dict_to_str(elements=node_a_properties,separator_dict=":") + "}),(b:User {" + cls._dict_to_str(elements=node_b_properties,separator_dict=":") + "}) \
             merge (a)-[:converInfo]->(convNode:Conversacion)<-[:converInfo]-(b) on create set convNode.numSeq = 0 on match set convNode.numSeq = convNode.numSeq + 1 create (a)-[:message {text: " + message + ",numSeq:convNode.numSeq,data:datetime(" + datetime + ")}]->(b)"
 
@@ -88,9 +84,6 @@ class Redes(Driver):
     #Q3
     @staticmethod
     def messages_after_data_to_str(cls,datetime: str,node_a_properties: Union[dict, None] = None, node_b_properties:  Union[dict, None] = None) -> str :
-        #TODO el comprobar si ta correcto:
-        if not cls.comprobarDatetime(datetime):
-            raise("The datetime is incorrect")
         # return cls.simple_node_relation_to_str( node_a_properties=node_a_properties,\
         #                                         node_b_properties=node_b_properties,\
         #                                         relation_identifier="r",\
