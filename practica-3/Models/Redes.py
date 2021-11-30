@@ -50,6 +50,8 @@ class Redes(Driver):
     def create_publication(cls, author: str, date: str, title: str, body: str, mentioned_usernames: Union[list,str,None] = None ) -> str:
         query_text = 'match (_author:user  {username:"'+author+'"}) '
         query_text_mentions = ""
+        
+        # Match of the mentioned users AND creation of the mention
         if mentioned_usernames is not None:
             if type(mentioned_usernames) is list:
                 for u in mentioned_usernames:
@@ -60,17 +62,22 @@ class Redes(Driver):
                 query_text_mentions += ",("+mentioned_usernames+")<-[:mention]-(_p)"
         query_text += ' create (_author)-[:publishes]->(_p:publishing  {author:"'+ author +'",title:"'+ title +'",body:"'+ body +'",date:"'+ date +'"})'
         query_text += query_text_mentions
+        
         cls.query(query_text)
         return query_text
     
     @classmethod
+    # Create new message
     def new_message_to_str(cls, message: str, datetime: str, sender_username: str, receiver_username:  str ) -> str :
         # cls._dict_to_str(elements=node_b_properties,separator_dict=":")
+        # When there is a new message, the sequence number stored in the "chat" node increments.
+        # If there is still no message between the two, one is created and starts with the sequence number at 0.
         return " match (a:user "+cls.username_dict(sender_username)+"),(b:user "+cls.username_dict(receiver_username)+") \
             merge (a)-[:chatInfo]->(convNode:chat)<-[:chatInfo]-(b) on create set convNode.sec = 0 on match set convNode.sec = convNode.sec + 1 create (a)-[:message {text:\"" + message + "\",sec:convNode.sec,date:datetime(\"" + datetime + "\")}]->(b)"
 
     #Q1
     @classmethod
+    # Get the friends and family of a given user
     def friend_and_family_to_str(cls, username: str) -> str :
         return " match "+\
             cls.node_to_str(labels=['user'], properties=cls.username_dict(username))+\
@@ -80,6 +87,7 @@ class Redes(Driver):
         
     #Q2
     @classmethod
+    # Obtain the relatives of the relatives of a given user
     def family_of_family_to_str(cls, username: str) -> str :
         return " match "+\
             cls.node_to_str(labels=['user'], properties=cls.username_dict(username))+\
@@ -89,6 +97,7 @@ class Redes(Driver):
         
     #Q3
     @classmethod
+    # Get all messages sent from a given user to a given user after a specified date
     def messages_after_data_to_str(cls,datetime: str,username_a: str, username_b: str) -> str :
         return " match "+\
             cls.node_to_str(labels=['user'], properties=cls.username_dict(username_a))+\
@@ -99,6 +108,7 @@ class Redes(Driver):
 
     #Q4
     @classmethod
+    # Obtain the complete conversation between two specific users
     def conversation_between_users_to_str(cls, username_a: str, username_b: str) -> str :
     # match (a:Prueba {nork:1})-[r:mensaje]-(b:Prueba {nork:7}) return r order by r.num_seq asc
         return " match "+\
@@ -109,6 +119,7 @@ class Redes(Driver):
 
     #Q5
     @classmethod
+    # Get all users mentioned by a given user who have a working relationship with the user who mentioned them.
     def mentioned_users_with_laboral_relation(cls, username: str) -> str :
         return " match "+\
             cls.node_to_str(identifier="publicante", labels=['user'], properties=cls.username_dict(username))+\
