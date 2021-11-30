@@ -12,6 +12,8 @@ class Redes(Driver):
 
         # Create username index and constraint: 
         #TODO: crear indexado para las fechas de los mensajes
+        #TODO es esto asi?
+        self.query('CREATE CONSTRAINT IF NOT EXISTS ON (m:message) ASSERT m.date IS UNIQUE')
         self.query('CREATE CONSTRAINT IF NOT EXISTS ON (u:user) ASSERT u.username IS UNIQUE')
 
     def _add_user(self, type, username: str, properties: Union[dict, None] = None):
@@ -124,8 +126,6 @@ class Redes(Driver):
             cls.return_to_str(labels="distinct mentioned")
 
     #Q6
-    #TODO no estoy seguro sobre el ASC o DESC
-    #TODO camviar lo del roderByAsc por numSaltos
     @classmethod
     def distance_new_relationships(cls, distance: int) -> str :
     # cls.using_to_str(     using=["path", '["Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros', "length(path) as numSaltos"])\
