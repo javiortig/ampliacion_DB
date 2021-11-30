@@ -50,7 +50,7 @@ class Redes(Driver):
         return " {username:\""+username+"\"} "
 
     @classmethod 
-    def create_publication(cls, author: str, date: str, title: str, body: str, mentioned_usernames: Union[list,str,None] = None ):
+    def create_publication(cls, author: str, date: str, title: str, body: str, mentioned_usernames: Union[list,str,None] = None ) -> str:
         query_text = 'match (_author:user  {username:"'+author+'"}) '
         query_text_mentions = ""
         if mentioned_usernames is not None:
@@ -82,7 +82,7 @@ class Redes(Driver):
             cls.return_to_str(labels="distinct p")
         
     #Q2
-    @staticmethod
+    @classmethod
     def family_of_family_to_str(cls, username: str) -> str :
         return " match "+\
             cls.node_to_str(labels=['user'], properties=cls.username_dict(username))+\
@@ -91,7 +91,7 @@ class Redes(Driver):
             cls.return_to_str(labels="distinct p")
         
     #Q3
-    @staticmethod
+    @classmethod
     def messages_after_data_to_str(cls,datetime: str,username_a: str, username_b: str) -> str :
         return " match "+\
             cls.node_to_str(labels=['user'], properties=cls.username_dict(username_a))+\
@@ -130,9 +130,9 @@ class Redes(Driver):
     def distance_new_relationships(cls, distance: int) -> str :
     # cls.using_to_str(     using=["path", '["Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros', "length(path) as numSaltos"])\
         return " match path = "+\
-            cls.node_to_str(identifier="inicio", labels="['user']")+\
+            cls.node_to_str(identifier="inicio", labels=['user'])+\
             cls.relation_to_str(labels=f'1..{distance}', direction=">")+\
-            cls.node_to_str(identifier="final", labels="['user']")+\
+            cls.node_to_str(identifier="final", labels=['user'])+\
             ' where inicio < final'+\
             ' with path, ["Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros, length(path) as numSaltos'+\
             ' where numSaltos>1'+\
@@ -143,3 +143,23 @@ class Redes(Driver):
     # with path, [[ID(inicio), ID(final)],"Segundo",apoc.coll.pairsMin(nodes(path))[0][1],"Tercero",inicio] as segundos_y_terceros, length(path) as numSaltos where numSaltos>1
     # RETURN numSaltos, segundos_y_terceros as Segundos ORDER BY length(path) skip 1 
 
+    #6
+    @classmethod
+    def messages_new_relationships(cls, username: str, min_messages: int) -> str :
+        return " match "+\
+            cls.node_to_str(identifier="f", labels=['user'], properties=cls.username_dict(username))+\
+            " , " + cls.node_to_str(identifier="s")+\
+            " , " + cls.node_to_str(identifier="t")+\
+            " , " + cls.node_to_str(identifier="f") + cls.relation_to_str(direction="-", labels="friend|family|academic|work") + cls.node_to_str(identifier="s", labels=['user'])+\
+            " , " + cls.node_to_str(identifier="f") + cls.relation_to_str() + cls.node_to_str(identifier="c1",labels=['chat']) + cls.relation_to_str() + cls.node_to_str(identifier="s")+\
+            " , " + cls.node_to_str(identifier="s") + cls.relation_to_str() + cls.node_to_str(identifier="c2",labels=['chat']) + cls.relation_to_str() + cls.node_to_str(identifier="t")+\
+            f' where c1.sec > {min_messages} and c2.sec > {min_messages} and not ' + cls.node_to_str(identifier="f") + cls.relation_to_str(labels="friend|family|academic|work") + cls.node_to_str(identifier="t")+\
+            " return t order by c1.sec desc, c2.sec desc "
+
+
+    # match (f:user {username: 'Angela Smith'}), (s:user), (t:user), (f:user)-[:friend|family|academic|work]-(s:user), 
+    # (f)--(c1:chat)--(s), (s)--(c2:chat)--(t)
+    # where c1.sec > 2 and c2.sec > 2 and
+    # not(f)-[:friend|family|academic|work]-(t)
+    # return t 
+    # order by c1.sec desc, c2.sec desc
