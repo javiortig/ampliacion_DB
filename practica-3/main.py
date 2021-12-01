@@ -32,12 +32,16 @@ if __name__ == "__main__":
     merge (m_f)-[:message {body: messages.body, date: datetime(messages.date), sec: messages.sec}]->(m_t)\
     return count(chats)'
     db.query(datos)
-    
-    Q1 = db.query(db.friend_and_family_to_str("Maria Q"))
-    Q2 = db.query(db.family_of_family_to_str("Maria Q"))
-    Q3 = db.query(db.messages_after_data_to_str(username_a="Maria Q", username_b="Joe Orti, Garcia",datetime="2007-10-17T21:43:15[Europe/Madrid]"))
-    Q4 = db.query(db.conversation_between_users_to_str(username_a="Maria Q", username_b="Joe Orti, Garcia"))
-    Q5 = db.query(db.mentioned_users_with_laboral_relation(username="Open University of Catalonia"))
-    Q6 = db.query(db.distance_new_relationships(distance=4))
-    Q7 = db.query(db.messages_new_relationships("Maria Q",min_messages=2))
+    user1 = 'Joe C'
+    user2 = 'Joe W'
+    user3 = ''
 
+    Q1 = db.query(db.friend_and_family_to_str(user1))
+    Q2 = db.query(db.family_of_family_to_str(user1))
+    Q3 = db.query(db.messages_after_date_to_str(username_a=user1, username_b=user2,datetime="2007-10-17T21:43:15[Europe/Madrid]"))
+    Q4 = db.query(db.conversation_between_users_to_str(username_a=user1, username_b=user2))
+    Q5 = db.query(db.mentioned_users_with_laboral_relation(username=user3))
+    Q6 = db.query(db.distance_new_relationships(distance=4))
+    Q7 = db.query(db.messages_new_relationships(user1,min_messages=2))
+
+    print(Q1)

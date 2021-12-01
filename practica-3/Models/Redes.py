@@ -98,7 +98,7 @@ class Redes(Driver):
     #Q3
     @classmethod
     # Get all messages sent from a given user to a given user after a specified date
-    def messages_after_data_to_str(cls,datetime: str,username_a: str, username_b: str) -> str :
+    def messages_after_date_to_str(cls,datetime: str,username_a: str, username_b: str) -> str :
         return " match "+\
             cls.node_to_str(labels=['user'], properties=cls.username_dict(username_a))+\
             cls.relation_to_str( identifier="r", labels="message",direction=">")+\

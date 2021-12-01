@@ -131,7 +131,7 @@ for u in result['users']:
 d1 = datetime.datetime.strptime('1/1/2001 1:30 PM', '%m/%d/%Y %I:%M %p')
 d2 = datetime.datetime.strptime('1/1/2021 4:50 AM', '%m/%d/%Y %I:%M %p')
 for u in result['users']:
-    has_pubs = random.randint(0, 2)
+    has_pubs = random.randint(0, 10)
 
     if (has_pubs > 1):
         count_choise = random.randint(0, 5)
@@ -191,3 +191,4 @@ print('n_chats = ' + str(n_chats))
 
 with open('data.json', 'w') as fp:
     json.dump(result, fp)
+    

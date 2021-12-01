@@ -132,10 +132,10 @@
 #db.query("LOAD CSV FROM 'file:////user_data.csv' AS data create (a:user {username:data[1]})") 
 
 # Query to load any data size to an empty database:
+# match (n) detach delete n 
 '''
-match (n) detach delete n
 
-call apoc.load.json("../vs/python_proyects/jotasones/data.json") yield value
+call apoc.load.json("/casita/mafia/ampliacion-db/ampliacion_DB/practica-3/superdata.json") yield value
 unwind value.users as users
 
 call apoc.merge.node(['user', users.type], {username: users.username}) yield node 
@@ -146,14 +146,14 @@ match (t:user {username: relations.to})
 call apoc.merge.relationship(f, relations.type, null, null, t, {}) yield rel 
 
 unwind value.publishings as pubs
-with distinct pubs, value
+with pubs, value
 match (auth:user {username: pubs.author})
-create (auth)-[:publishes]->(p:publishing {author: pubs.author, title: pubs.title, body: pubs.body, date: datetime(pubs.date)})
+merge (auth)-[:publishes]->(p:publishing {author: pubs.author, title: pubs.title, body: pubs.body, date: datetime(pubs.date)})
 
 with distinct pubs, value, p
 unwind pubs.mentions as mentions
 match (men:user {username: mentions})
-create (p)-[:mention]->(men)
+merge (p)-[:mention]->(men)
 
 
 with value
@@ -169,6 +169,6 @@ match (m_f:user {username: messages.from})
 match (m_t:user {username: messages.to}) 
 merge (m_f)-[:message {body: messages.body, date: datetime(messages.date), sec: messages.sec}]->(m_t)
 
-return count(chats)        
+return count(chats)
 
 '''
