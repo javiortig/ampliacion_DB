@@ -172,3 +172,6 @@ merge (m_f)-[:message {body: messages.body, date: datetime(messages.date), sec: 
 return count(chats)
 
 '''
+
+
+# , cf, cs, cf.sec as num_f, cs.sec as num_s
