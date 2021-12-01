@@ -167,7 +167,7 @@ with value, chats
 unwind chats.messages as messages
 match (m_f:user {username: messages.from})
 match (m_t:user {username: messages.to}) 
-create (m_f)-[:message {body: messages.body, date: datetime(messages.date), sec: messages.sec}]->(m_t)
+merge (m_f)-[:message {body: messages.body, date: datetime(messages.date), sec: messages.sec}]->(m_t)
 
 return count(chats)        
 

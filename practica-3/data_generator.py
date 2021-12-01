@@ -96,7 +96,7 @@ for i in range(n):
 
 # Generate relations between users:
 for u in result['users']:
-    count_choise = random.randint(0, 3)
+    count_choise = random.randint(1, int(2*n/3))
     to_list = random.sample(result['users'], count_choise)
 
     if (u in to_list):
@@ -151,7 +151,6 @@ random.shuffle(users)
 for i in range(n_chats):
     chat = {}
     chat['messages'] = []
-    print(i)
     if (len(users) <= 2):
         break
 
