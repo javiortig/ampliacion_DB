@@ -85,11 +85,11 @@ class Redes(Driver):
         if mentioned_usernames is not None:
             if type(mentioned_usernames) is list:
                 for u in mentioned_usernames:
-                    query_text += (",("+u.replace(" ", "_")+":user {username:\""+u+"\"}) " if type(u) is str else "")
-                    query_text_mentions += ",("+u.replace(" ", "_")+")<-[:mention]-(_p)"
+                    query_text += (",("+u.replace(" ", "_").replace("(","_").replace(")","_")+":user {username:\""+u+"\"}) " if type(u) is str else "")
+                    query_text_mentions += ",("+u.replace(" ", "_").replace("(","_").replace(")","_")+")<-[:mention]-(_p)"
             else:
-                query_text += (",("+mentioned_usernames.replace(" ", "_")+":user {username:\""+author+"\"} " if mentioned_usernames is not None else "")
-                query_text_mentions += ",("+mentioned_usernames.replace(" ", "_")+")<-[:mention]-(_p)"
+                query_text += (",("+mentioned_usernames.replace(" ", "_").replace("(","_").replace(")","_")+":user {username:\""+author+"\"} " if mentioned_usernames is not None else "")
+                query_text_mentions += ",("+mentioned_usernames.replace(" ", "_").replace("(","_").replace(")","_")+")<-[:mention]-(_p)"
         query_text += ' create (_author)-[:publishes]->(_p:publishing  {author:"'+ author +'",title:"'+ title +'",body:"'+ body +'",date:"'+ date +'"})'
         query_text += query_text_mentions
 
