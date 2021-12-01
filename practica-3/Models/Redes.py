@@ -11,8 +11,9 @@ class Redes(Driver):
         # Create username index and constraint: 
         self.query('CREATE CONSTRAINT IF NOT EXISTS ON (u:user) ASSERT u.username IS UNIQUE')
 
-    def load_json(self):
-        load_json_query = 'call apoc.load.json("../vs/python_proyects/jotasones/data.json") yield value\
+    @classmethod
+    def load_json(cls, url: str) ->str:
+        load_json_query = 'call apoc.load.json("'+ url +'") yield value\
         unwind value.users as users\
         call apoc.merge.node([\'user\', users.type], {username: users.username}) yield node \
         unwind value.relations as relations\
@@ -39,7 +40,7 @@ class Redes(Driver):
         match (m_t:user {username: messages.to})\
         merge (m_f)-[:message {body: messages.body, date: datetime(messages.date), sec: messages.sec}]->(m_t)\
         return count(chats)'
-        self.query(load_json_query)
+        return load_json_query
 
     @classmethod
     def _add_user(cls, type, username: str, properties: Union[dict, None] = None):

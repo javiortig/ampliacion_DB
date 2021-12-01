@@ -4,7 +4,7 @@ from Models.Redes import Redes
 if __name__ == "__main__":
     db = Redes()
     user1 = 'Miguel V'
-    user2 = ''
+    user2 = 'Andy Q'
     user3 = 'Universidad Rey Juan Carlos (URJC)'
     user4 = 'Josefa Valdes'
     user5 = 'Angela G'
@@ -13,9 +13,10 @@ if __name__ == "__main__":
 
     # Load data to new empty db
     db.query('match (n) detach delete n')
-    db.load_json()
+    # ../vs/python_proyects/jotasones/data.json
+    db.query(db.load_json("ampliacion-db/ampliacion_DB/practica-3/superdata.json"))
 
-    db.query(db.create_publication(user5, "2019-08-12T00:00:01[Europe/Madrid]", "Soy guapa", "Asi soy asi soy jeje", [user1, user3]))
+    db.query(db.create_publication(user5, "2019-08-12T00:00:01[Europe/Madrid]", "Soy guapa", "Asi soy asi soy jeje", [user1, user4]))
     db.query(db.create_publication(user4, "2019-08-12T00:00:01[Europe/Madrid]", "Josefa soy sin mencion", "Asi soy asi soy jeje"))
     db.query(db.create_company("Applesitos"))
     db.query(db.create_company("Googlesitos", Ricos="Si", guapos="También"))
@@ -74,7 +75,7 @@ if __name__ == "__main__":
     db.query(db.new_message_to_str("e", "2019-08-12T00:00:01[Europe/Madrid]", "John Smith", "lhkyasol"))
     db.query(db.new_message_to_str("f", "2019-08-12T00:00:01[Europe/Madrid]", "John Smith", "lhkyasol"))
     print("\n\n\n\n")
-    print("New relationships for user " + user5 + "based on" + +  "message interactions")
+    print("New relationships for user " + user5 + "based on" + str(min_messages) +  "message interactions")
     Q7 = db.query(db.messages_new_relationships(user1,min_messages=min_messages))
     print(Q7)
 
