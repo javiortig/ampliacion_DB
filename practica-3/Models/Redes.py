@@ -44,8 +44,8 @@ class Redes(Driver):
         
     @classmethod
     def username_dict(cls, username: str) -> str :
-        return " {username:\""+username+"\"} "
-
+        return {"username":username}
+    
     @classmethod 
     def create_publication(cls, author: str, date: str, title: str, body: str, mentioned_usernames: Union[list,str,None] = None ) -> str:
         query_text = 'match (_author:user  {username:"'+author+'"}) '
@@ -104,18 +104,18 @@ class Redes(Driver):
             cls.relation_to_str( identifier="r", labels="message",direction=">")+\
             cls.node_to_str(labels=['user'], properties=cls.username_dict(username_b))+\
             " where r.date > datetime(\""+datetime+"\") "+\
-            cls.return_to_str(labels="r", orderByAsc="r.date")
+            cls.return_to_str(labels="r.date", orderByAsc="r.date")
 
     #Q4
     @classmethod
     # Obtain the complete conversation between two specific users
     def conversation_between_users_to_str(cls, username_a: str, username_b: str) -> str :
-    # match (a:Prueba {nork:1})-[r:mensaje]-(b:Prueba {nork:7}) return r order by r.num_seq asc
+        # match (a:Prueba {nork:1})-[r:mensaje]-(b:Prueba {nork:7}) return r order by r.num_seq asc
         return " match "+\
             cls.node_to_str(labels=['user'], properties=cls.username_dict(username_a))+\
             cls.relation_to_str(identifier="r", labels="message", direction='-')+\
             cls.node_to_str(labels=['user'], properties=cls.username_dict(username_b))+\
-            cls.return_to_str(labels="r", orderByAsc="r.sec")
+            cls.return_to_str(labels="r.date", orderByAsc="r.sec")
 
     #Q5
     @classmethod

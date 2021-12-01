@@ -71,19 +71,19 @@ class Driver:
 
         return result
     
-    @staticmethod
+    @classmethod
     # Transforms dict to a valid format for use in queries
     def _dict_to_str(cls,elements: dict, separator_dict: str ="="):
         return cls._elements_to_str([cls._elements_to_str(separator=separator_dict,elements=a) for a in [(k,v) for k,v in elements.items()]])
 
-    @staticmethod
+    @classmethod
     # Shortcut for clause merge
     def merge_to_str(cls,merge: Union[list, str], on_create: Union[dict, str, None] = None, on_match: Union[dict, str, None] = None):
         return " merge " +cls._elements_to_str(elements=merge)\
                         + (" on create set " + (on_create if type(on_create) is str else (cls._dict_to_str(elements=on_create) if on_create is not None else "")))\
                         + (" on match set " + (on_match if type(on_match) is str else (cls._dict_to_str(elements=on_match) if on_match is not None else "")))
 
-    @staticmethod
+    @classmethod
     # Shortcut for clause return
     def return_to_str(cls,labels: Union[list, str] = "*", orderByAsc: Union[str, None] = None,  orderByDesc: Union[str, None] = None, skip: Union[int,None] = 0, limit: Union[int,None] = None) -> str :
         if orderByAsc is not None and orderByDesc is not None:
@@ -98,7 +98,7 @@ class Driver:
             result += f' limit {limit}'
         return result
 
-    # @staticmethod
+    # @classmethod
     # def simple_node_relation_to_str(cls,\
     #     node_a_identifier: Union[str, None] = None, node_a_labels: Union[list, str, None] = ['user'], node_a_properties: Union[dict, None] = None,\
     #     node_b_identifier: Union[str, None] = None, node_b_labels: Union[list, str, None] = ['user'], node_b_properties: Union[dict, None] = None,\
@@ -114,28 +114,28 @@ class Driver:
     #         + (cls.condition_to_str(condition=afterUsingCondition) if afterUsingCondition is not None else ""),\
     #         + cls.return_to_str(labels=return_labels,orderByAsc=orderByAsc,orderByDesc=orderByDesc,skip=skip,limit=limit)
    	
-    @staticmethod
+    @classmethod
     # Transforms list to a valid format for use in queries
     def _elements_to_str(cls, elements: Union[list,str], separator: str =",") -> str :
         return elements if type(elements) is str else separator.join(elements)
 
-    @staticmethod
+    @classmethod
     # This function is used just to reuse code
     def _inner_query_clauses(cls,clause: str, elements: Union[list,str]) -> str :
         res = " " + clause + cls._elements_to_str(elements=elements)
         return res
 
-    @staticmethod
+    @classmethod
     # Shortcut for clause where
     def condition_to_str(cls,condition: Union[list,str]) -> str :
         return cls._inner_query_clauses("where",condition)
 
-    @staticmethod
+    @classmethod
     # Shortcut for clause with
     def using_to_str(cls,using: Union[list,str]) -> str :
         return cls._inner_query_clauses("with",using)
     
-    @staticmethod
+    @classmethod
     # Shortcut for clause create
     def create_to_str(cls,create: Union[list,str]) -> str :
         return cls._inner_query_clauses("create",create)
@@ -146,7 +146,7 @@ class Driver:
             greeting = session.write_transaction(self._create_and_return_greeting, message)
             print(greeting)
 
-    @staticmethod
+    @classmethod
     def _create_and_return_greeting(tx, message):
         result = tx.run("CREATE (a:Greeting) "
                         "SET a.message = $message "
