@@ -137,7 +137,7 @@ class Redes(Driver):
             cls.relation_to_str( identifier="r", labels="message",direction=">")+\
             cls.node_to_str(labels=['user'], properties=cls.username_dict(username_b))+\
             " where r.date > datetime(\""+datetime+"\") "+\
-            cls.return_to_str(labels="r.date", orderByAsc="r.date")
+            cls.return_to_str(labels="r", orderByAsc="r.date")
 
     #Q4
     @classmethod
@@ -148,7 +148,7 @@ class Redes(Driver):
             cls.node_to_str(labels=['user'], properties=cls.username_dict(username_a))+\
             cls.relation_to_str(identifier="r", labels="message", direction='-')+\
             cls.node_to_str(labels=['user'], properties=cls.username_dict(username_b))+\
-            cls.return_to_str(labels="r.date", orderByAsc="r.sec")
+            cls.return_to_str(labels="r", orderByAsc="r.sec")
 
     #Q5
     @classmethod
@@ -160,7 +160,7 @@ class Redes(Driver):
             cls.node_to_str(labels=['publishing'])+\
             cls.relation_to_str(labels=['mention'])+\
             cls.node_to_str(identifier="mentioned", labels=['user'])+\
-            cls.relation_to_str(labels=['work'])+\
+            cls.relation_to_str(labels=['work'], direction="-")+\
             cls.node_to_str(identifier="publicante")+\
             cls.return_to_str(labels="distinct mentioned")
 
@@ -215,15 +215,15 @@ class Redes(Driver):
                 " and f<>t "+\
             " match "+\
                 cls.node_to_str(identifier="f")+\
-                cls.relation_to_str()+\
+                cls.relation_to_str(direction="-")+\
                 cls.node_to_str(identifier="c1", labels=['chat'])+\
-                cls.relation_to_str()+\
+                cls.relation_to_str(direction="-")+\
                 cls.node_to_str(identifier="s")+\
                 " , "+\
                 cls.node_to_str(identifier="s")+\
-                cls.relation_to_str()+\
+                cls.relation_to_str(direction="-")+\
                 cls.node_to_str(identifier="c2", labels=['chat'])+\
-                cls.relation_to_str()+\
+                cls.relation_to_str(direction="-")+\
                 cls.node_to_str(identifier="t")+\
             f' where c1.sec + 1 > {min_messages} and c2.sec + 1 > {min_messages} '+\
             " with f, s, t, c1, c2 "+\
