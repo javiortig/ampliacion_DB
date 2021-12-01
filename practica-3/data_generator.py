@@ -96,7 +96,7 @@ for i in range(n):
 
 # Generate relations between users:
 for u in result['users']:
-    count_choise = random.randint(0, 3)
+    count_choise = random.randint(0, int(2*n/3))
     to_list = random.sample(result['users'], count_choise)
 
     if (u in to_list):
@@ -118,6 +118,12 @@ for u in result['users']:
                     relation['type'] = 'family'
                 else:
                     relation['type'] = 'friend'
+
+            # Check if exists
+            for r in result['relations']:
+                if (r['from'] == relation['from'] and r['to'] == relation['to']) \
+                    or (r['from'] == relation['to'] and r['to'] == relation['from']):
+                    continue
 
             result['relations'].append(relation)
                 
@@ -151,7 +157,6 @@ random.shuffle(users)
 for i in range(n_chats):
     chat = {}
     chat['messages'] = []
-#     print(i)
     if (len(users) <= 2):
         break
 
@@ -182,7 +187,7 @@ for i in range(n_chats):
     chat['sec'] = j
     result['chats'].append(chat)
 
-# print('n_chats = ' + str(n_chats))
+print('n_chats = ' + str(n_chats))
 
 with open('data.json', 'w') as fp:
     json.dump(result, fp)
