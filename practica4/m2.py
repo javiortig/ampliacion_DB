@@ -4,7 +4,6 @@ import sys
 
 for line in sys.stdin:
     try:
-        if line.split(";")[4] == "GET":
-            print(line, end='')
+        print(line.split(";")[4])
     except:
         pass
