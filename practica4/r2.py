@@ -1,13 +1,14 @@
 #!usr/bin/python
 
 import sys
+from collections import Counter
 
-groupby_dict = {}
+peticiones = Counter()
 for line in sys.stdin:
     line_clean = line.rstrip("\n")
-    if line_clean in groupby_dict.keys():
-        groupby_dict[line_clean] = groupby_dict[line_clean]+1
+    if line_clean in peticiones:
+        peticiones[line_clean] += 1
     else:
-        groupby_dict[line_clean] = 1
+        peticiones[line_clean] = 0
 
-print(groupby_dict)
+print(dict(peticiones))

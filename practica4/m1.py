@@ -4,7 +4,8 @@ import sys
 
 for line in sys.stdin:
     try:
-        if line.split(";")[4] == "GET":
-            print(line, end='')
+        petition = line.split(";")[4]
+        if petition == "GET":
+            print(petition, end='\n')
     except:
         pass

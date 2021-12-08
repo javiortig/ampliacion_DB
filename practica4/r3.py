@@ -1,17 +1,19 @@
 #!usr/bin/python
 
 import sys
+from collections import Counter
 
-groupby_dict = {}
+peticiones = Counter()
 for line in sys.stdin:
     line_clean = line.rstrip("\n")
-    if line_clean in groupby_dict.keys():
-        groupby_dict[line_clean] = groupby_dict[line_clean]+1
+    if line_clean in peticiones:
+        peticiones[line_clean] += 1
     else:
-        groupby_dict[line_clean] = 1
+        peticiones[line_clean] = 0
 
-total = sum(groupby_dict.values())
-for a in groupby_dict.keys():
-    groupby_dict[a] = groupby_dict[a]/total
+total = sum(peticiones.values())
 
-print(groupby_dict)
+for a in peticiones.keys():
+    peticiones[a] /= total
+
+print(dict(peticiones))
