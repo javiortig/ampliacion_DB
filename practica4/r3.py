@@ -11,6 +11,8 @@ for line in sys.stdin:
     else:
         peticiones[line_clean] = 0
 
+# In python 3.10
+# total = peticiones.total()
 total = sum(peticiones.values())
 
 for a in peticiones.keys():
