@@ -10,5 +10,11 @@ for line in sys.stdin:
     else:
         counts[line] = 1
 
+total = 0
+for v in counts.values():
+    total += v
+
+for k in counts:
+    counts[k] = str(counts[k]/total * 100) + ' %'    
 
 print(counts)

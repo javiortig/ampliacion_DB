@@ -18,5 +18,4 @@ for line in sys.stdin:
         continue
 
     
-    if formated_line[4] != "":
-        print(formated_line[4],end='\n')
+    print(f'{formated_line[4]} {formated_line[7][0]}XX')
