@@ -17,5 +17,5 @@ for line in sys.stdin:
     if (not formated_line):
         continue
 
-    print(f'{formated_line[0]} {formated_line[-1]}')
+    print(f'{formated_line[0]} {formated_line[8]}')
     

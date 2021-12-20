@@ -4,6 +4,7 @@ import sys
 import heapq
 
 res = {}
+# TODO: el diccionario final tiene 50K entradas. Asi no se puede hacer
 for line in sys.stdin:
     line = line.replace('\n', '').split()
 
@@ -18,4 +19,5 @@ for line in sys.stdin:
 
 
 print(heapq.nlargest(3, res, key=res.get))
+print(len(res))
 # print(sorted(res, key=res.get, reverse=True)[:3])
