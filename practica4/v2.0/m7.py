@@ -14,8 +14,8 @@ def validator(line: str) -> list:
 for line in sys.stdin:
     # validate the line
     formated_line = validator(line)
-    if (not formated_line):
+    if (not formated_line) or formated_line[0] == '' or not formated_line[-1].isdigit():
         continue
 
-    print(f'{formated_line[0]} {formated_line[8]}')
+    print(f'{formated_line[0]} {formated_line[-1]}')
     
