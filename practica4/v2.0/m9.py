@@ -3,6 +3,7 @@
 import sys
 
 # gets the line cleaned and splitted
+# cat apache.log | python m9.py | sort | python r9_v2_1.py
 def validator(line: str) -> list:
     line_splitted = line.strip().split(";")
 

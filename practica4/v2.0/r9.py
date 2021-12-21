@@ -17,6 +17,7 @@ for line in sys.stdin:
         res[line[0]] = int(line[1]) * int( 2*(-0.5 + int(line[2]=="GET")) )
 
 
+
 # No, no hay ninguno con balance negativo, quien se lo hubiera imaginado...
 # for a in res.values():
 #     if a < 0:
@@ -24,3 +25,5 @@ for line in sys.stdin:
 #         break
 
 print(res)
+
+print(len(res)) # TODO: aqui ves que has hecho un megadiccionario

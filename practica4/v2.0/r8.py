@@ -21,3 +21,5 @@ for line in sys.stdin:
 
 for dom in res.items():
     print(f'{dom[0]}: {heapq.nlargest(3, dom[1], key=dom[1].get)}')
+
+print(len(res)) # TODO: diccionario

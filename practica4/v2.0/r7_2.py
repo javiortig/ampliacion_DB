@@ -23,3 +23,5 @@ for line in sys.stdin:
 
 
 print(sorted(domains.items(), key=lambda x: x[1], reverse=True))
+
+print(len(domains))
